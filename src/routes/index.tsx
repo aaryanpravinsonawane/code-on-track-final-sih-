@@ -29,6 +29,7 @@ import { ChartBox } from "@/components/trackwise/ChartBox";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { NetworkMap } from "@/components/trackwise/NetworkMap";
 import { RailwayKpiGrid } from "@/components/trackwise/RailwayAnalytics";
+import { LiveOperationsFeed } from "@/components/realtime/LiveOperationsFeed";
 import { DeptTag, Panel, PriorityTag } from "@/components/trackwise/shared";
 import { RESOURCES, SECTIONS, TASKS, TRAINS, WINDOWS, fmt } from "@/lib/trackwise/data";
 import { conflictingTrains, priorityBand, priorityScore } from "@/lib/trackwise/engine";
@@ -65,7 +66,8 @@ function Dashboard() {
     0,
   );
   const assetAvailability = Math.round(
-    (RESOURCES.reduce((s, r) => s + r.available, 0) / RESOURCES.reduce((s, r) => s + r.total, 0)) * 100,
+    (RESOURCES.reduce((s, r) => s + r.available, 0) / RESOURCES.reduce((s, r) => s + r.total, 0)) *
+      100,
   );
 
   const bySection = SECTIONS.map((s) => ({
@@ -79,30 +81,107 @@ function Dashboard() {
     name: k,
     value: TRAINS.filter((t) => t.type === k).length,
   }));
-  const PIE = ["var(--color-primary)", "var(--color-info)", "var(--color-snt)", "var(--color-eng)", "var(--color-muted-foreground)"];
+  const PIE = [
+    "var(--color-primary)",
+    "var(--color-info)",
+    "var(--color-snt)",
+    "var(--color-eng)",
+    "var(--color-muted-foreground)",
+  ];
 
   const topTasks = [...TASKS].sort((a, b) => priorityScore(b) - priorityScore(a)).slice(0, 6);
 
   return (
     <MainShell
-    title="RAILWAY MANAGEMENT SYSTEM"
+      title="RAILWAY MANAGEMENT SYSTEM"
       subtitle="Integrated TMS · TDMS · SMMS · COA · Station Master · AI Priority Engine"
     >
       <RailwayKpiGrid />
       <div className="mt-4" />
+      <LiveOperationsFeed compact />
+      <div className="mt-4" />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <KpiCard label="Total Stations" value={5} icon={TrainFront} hint="Across railway division" />
-        <KpiCard label="Active Trains" value={TRAINS.length} icon={TrainFront} hint="Scheduled on corridor today" />
-        <KpiCard label="Delayed Trains" value={2} icon={AlertTriangle} tone="warn" hint="Currently delayed >15 min" />
-        <KpiCard label="Critical Incidents" value={1} icon={TriangleAlert} tone="danger" hint="Requires immediate attention" />
-        <KpiCard label="Track Defects" value={8} icon={TriangleAlert} tone="warn" hint="Across all sections" />
-        <KpiCard label="Signal Faults" value={3} icon={AlertTriangle} tone="warn" hint="Active signal issues" />
-        <KpiCard label="Traction Faults" value={2} icon={BatteryCharging} tone="warn" hint="OHE/traction issues" />
-        <KpiCard label="Active Maintenance Blocks" value={plan?.metrics.blocksPlanned ?? 0} icon={CalendarClock} hint={plan ? "From latest optimization" : "Run the planner"} />
-        <KpiCard label="Open Work Orders" value={pending.length} icon={ListChecks} hint={`Across 3 departments · ${SECTIONS.length} sections`} />
-        <KpiCard label="AI Recommendations" value={6} icon={Sparkles} tone="success" hint="Pending operator review" />
-        <KpiCard label="Block Utilization" value={plan?.metrics.avgUtilization ?? 0} unit="%" icon={Gauge} tone="success" hint="Average across planned blocks" />
-        <KpiCard label="Asset Availability" value={assetAvailability} unit="%" icon={BatteryCharging} hint="Crew and machinery pool" />
+        <KpiCard
+          label="Total Stations"
+          value={5}
+          icon={TrainFront}
+          hint="Across railway division"
+        />
+        <KpiCard
+          label="Active Trains"
+          value={TRAINS.length}
+          icon={TrainFront}
+          hint="Scheduled on corridor today"
+        />
+        <KpiCard
+          label="Delayed Trains"
+          value={2}
+          icon={AlertTriangle}
+          tone="warn"
+          hint="Currently delayed >15 min"
+        />
+        <KpiCard
+          label="Critical Incidents"
+          value={1}
+          icon={TriangleAlert}
+          tone="danger"
+          hint="Requires immediate attention"
+        />
+        <KpiCard
+          label="Track Defects"
+          value={8}
+          icon={TriangleAlert}
+          tone="warn"
+          hint="Across all sections"
+        />
+        <KpiCard
+          label="Signal Faults"
+          value={3}
+          icon={AlertTriangle}
+          tone="warn"
+          hint="Active signal issues"
+        />
+        <KpiCard
+          label="Traction Faults"
+          value={2}
+          icon={BatteryCharging}
+          tone="warn"
+          hint="OHE/traction issues"
+        />
+        <KpiCard
+          label="Active Maintenance Blocks"
+          value={plan?.metrics.blocksPlanned ?? 0}
+          icon={CalendarClock}
+          hint={plan ? "From latest optimization" : "Run the planner"}
+        />
+        <KpiCard
+          label="Open Work Orders"
+          value={pending.length}
+          icon={ListChecks}
+          hint={`Across 3 departments · ${SECTIONS.length} sections`}
+        />
+        <KpiCard
+          label="AI Recommendations"
+          value={6}
+          icon={Sparkles}
+          tone="success"
+          hint="Pending operator review"
+        />
+        <KpiCard
+          label="Block Utilization"
+          value={plan?.metrics.avgUtilization ?? 0}
+          unit="%"
+          icon={Gauge}
+          tone="success"
+          hint="Average across planned blocks"
+        />
+        <KpiCard
+          label="Asset Availability"
+          value={assetAvailability}
+          unit="%"
+          icon={BatteryCharging}
+          hint="Crew and machinery pool"
+        />
       </div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-[2fr_1fr]">
@@ -145,7 +224,14 @@ function Dashboard() {
           <ChartBox height={220}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={byType} dataKey="value" nameKey="name" innerRadius={45} outerRadius={80} paddingAngle={2}>
+                <Pie
+                  data={byType}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={45}
+                  outerRadius={80}
+                  paddingAngle={2}
+                >
                   {byType.map((_, i) => (
                     <Cell key={i} fill={PIE[i]} />
                   ))}
@@ -172,8 +258,13 @@ function Dashboard() {
             <NetworkMap onSelectStation={setSelectedStation} selectedStation={selectedStation} />
             {selectedStation && (
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-cyan-400/20 bg-cyan-400/5 px-4 py-3 text-sm">
-                <span><strong className="text-cyan-700 dark:text-cyan-300">{selectedStation}</strong> selected for station-level monitoring.</span>
-                <Link to="/station-master" className="font-semibold text-primary hover:underline">Open Station Master →</Link>
+                <span>
+                  <strong className="text-cyan-700 dark:text-cyan-300">{selectedStation}</strong>{" "}
+                  selected for station-level monitoring.
+                </span>
+                <Link to="/station-master" className="font-semibold text-primary hover:underline">
+                  Open Station Master →
+                </Link>
               </div>
             )}
           </div>
@@ -229,8 +320,12 @@ function Dashboard() {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">{w.label}</p>
-                  <p className={`mt-1 text-[11px] font-semibold ${c.length ? "text-danger" : "text-success"}`}>
-                    {c.length ? `${c.length} train conflict(s): ${c.map((x) => x.id).join(", ")}` : "No train conflict"}
+                  <p
+                    className={`mt-1 text-[11px] font-semibold ${c.length ? "text-danger" : "text-success"}`}
+                  >
+                    {c.length
+                      ? `${c.length} train conflict(s): ${c.map((x) => x.id).join(", ")}`
+                      : "No train conflict"}
                   </p>
                 </div>
               );

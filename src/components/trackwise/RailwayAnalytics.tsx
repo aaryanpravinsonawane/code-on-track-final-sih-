@@ -30,6 +30,8 @@ import {
 import { ChartBox } from "@/components/trackwise/ChartBox";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { Panel } from "@/components/trackwise/shared";
+import { useRealtimeIssues } from "@/hooks/useRealtimeIssues";
+import { useRealtimeFeed } from "@/hooks/useRealtimeFeed";
 import { generateStationIncidents } from "@/lib/trackwise/operations";
 import { RESOURCES, SECTIONS, TASKS, TRAINS, fmt } from "@/lib/trackwise/data";
 import { trainOccupancy } from "@/lib/trackwise/engine";
@@ -102,12 +104,26 @@ function ChartFrame({ children, height = 280 }: { children: ReactElement; height
 }
 
 export function RailwayKpiGrid() {
-  const openIssues = generateStationIncidents(56).filter(
-    (incident) => incident.status !== "Resolved",
-  ).length;
-  const availableTracks = SECTIONS.filter(
-    (section) => section.operationalStatus === "Operational",
-  ).length;
+  const { issues: realtimeIncidents } = useRealtimeIssues();
+  const { events: realtimeEvents } = useRealtimeFeed();
+  const incidents = realtimeIncidents.length ? realtimeIncidents : generateStationIncidents(56);
+  const liveTrainEvents = realtimeEvents.filter((event) => event.type === "train");
+  const liveTrackEvents = realtimeEvents.filter((event) => event.type === "track");
+  const liveSignalEvents = realtimeEvents.filter((event) => event.type === "signal");
+  const activeTrains = liveTrainEvents.length || TRAINS.length;
+  const availableTracks =
+    liveTrackEvents.length > 0
+      ? liveTrackEvents.filter((event) => !event.status.toLowerCase().includes("blocked")).length
+      : SECTIONS.filter((section) => section.operationalStatus === "Operational").length;
+  const signalHealth = liveSignalEvents.length
+    ? Math.max(
+        0,
+        100 - liveSignalEvents.filter((event) => event.severity === "critical").length * 4,
+      )
+    : 96;
+  const openIssues = incidents.filter((incident) => incident.status !== "Resolved").length;
+  const resolvedIssues = incidents.filter((incident) => incident.status === "Resolved").length;
+  const criticalAlerts = realtimeEvents.filter((event) => event.severity === "critical").length;
   const resourceAvailability = Math.round(
     (RESOURCES.reduce((sum, resource) => sum + resource.available, 0) /
       RESOURCES.reduce((sum, resource) => sum + resource.total, 0)) *
@@ -117,7 +133,7 @@ export function RailwayKpiGrid() {
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
       <KpiCard
         label="Active Trains"
-        value={TRAINS.length}
+        value={activeTrains}
         icon={TrainFront}
         hint="Running on corridor"
       />
@@ -130,7 +146,7 @@ export function RailwayKpiGrid() {
       />
       <KpiCard
         label="Signal Health"
-        value={96}
+        value={signalHealth}
         unit="%"
         icon={Signal}
         tone="success"
@@ -150,6 +166,20 @@ export function RailwayKpiGrid() {
         icon={TriangleAlert}
         tone="danger"
         hint="Requires attention"
+      />
+      <KpiCard
+        label="Resolved Issues"
+        value={resolvedIssues}
+        icon={Signal}
+        tone="success"
+        hint="Closed in live feed"
+      />
+      <KpiCard
+        label="Critical Alerts"
+        value={criticalAlerts}
+        icon={TriangleAlert}
+        tone="danger"
+        hint="Live attention required"
       />
       <KpiCard
         label="System Efficiency"
@@ -196,19 +226,44 @@ export function TrainTrafficTrend() {
 }
 
 export function IssueDistribution() {
+  const { issues } = useRealtimeIssues();
+  const data = issues.length
+    ? [
+        {
+          name: "Track",
+          value: issues.filter((issue) => issue.department === "TMS").length,
+          color: "#1e40af",
+        },
+        {
+          name: "Signal",
+          value: issues.filter((issue) => issue.department === "SMMS").length,
+          color: "#f97316",
+        },
+        {
+          name: "Power",
+          value: issues.filter((issue) => issue.department === "TDMS").length,
+          color: "#0ea5e9",
+        },
+        {
+          name: "Safety",
+          value: issues.filter((issue) => issue.department === "COA").length,
+          color: "#dc2626",
+        },
+      ]
+    : issueData;
   return (
     <Panel title="ISSUE DISTRIBUTION" subtitle="Current workload by operational domain">
       <ChartFrame>
         <PieChart>
           <Pie
-            data={issueData}
+            data={data}
             dataKey="value"
             nameKey="name"
             innerRadius={58}
             outerRadius={92}
             paddingAngle={4}
           >
-            {issueData.map((entry) => (
+            {data.map((entry) => (
               <Cell key={entry.name} fill={entry.color} />
             ))}
           </Pie>
@@ -221,15 +276,35 @@ export function IssueDistribution() {
 }
 
 export function DepartmentPerformance() {
+  const { events } = useRealtimeFeed();
   const data = [
     { department: "TMS", uptime: 98, resolved: 86 },
     { department: "TDMS", uptime: 94, resolved: 79 },
     { department: "SMMS", uptime: 97, resolved: 91 },
   ];
+  const liveData =
+    events.length > 3
+      ? ["TMS", "TDMS", "SMMS"].map((department) => ({
+          department,
+          uptime: Math.max(
+            0,
+            100 -
+              events.filter((event) => event.source === department && event.severity === "critical")
+                .length *
+                5,
+          ),
+          resolved: Math.round(
+            (events.filter((event) => event.source === department && event.severity === "success")
+              .length /
+              Math.max(1, events.filter((event) => event.source === department).length)) *
+              100,
+          ),
+        }))
+      : data;
   return (
     <Panel title="DEPARTMENT PERFORMANCE" subtitle="Uptime and issue resolution score">
       <ChartFrame>
-        <BarChart data={data} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
+        <BarChart data={liveData} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={GRID} />
           <XAxis dataKey="department" tick={chartAxis} axisLine={false} tickLine={false} />
           <YAxis domain={[0, 100]} tick={chartAxis} axisLine={false} tickLine={false} />
@@ -244,10 +319,22 @@ export function DepartmentPerformance() {
 }
 
 export function MonthlyIncidents() {
+  const { issues } = useRealtimeIssues();
+  const data = issues.length
+    ? monthlyIncidentData.map((month, index) =>
+        index === monthlyIncidentData.length - 1
+          ? {
+              ...month,
+              incidents: issues.length,
+              resolved: issues.filter((issue) => issue.status === "Resolved").length,
+            }
+          : month,
+      )
+    : monthlyIncidentData;
   return (
     <Panel title="MONTHLY INCIDENTS" subtitle="Reported incidents compared with resolved cases">
       <ChartFrame>
-        <AreaChart data={monthlyIncidentData} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
+        <AreaChart data={data} margin={{ top: 8, right: 12, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="incidentFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={ORANGE} stopOpacity={0.32} />
@@ -282,7 +369,19 @@ export function MonthlyIncidents() {
 }
 
 export function ResolutionRate() {
-  const data = monthlyIncidentData.map((month) => ({
+  const { issues } = useRealtimeIssues();
+  const incidentData = issues.length
+    ? monthlyIncidentData.map((month, index) =>
+        index === monthlyIncidentData.length - 1
+          ? {
+              ...month,
+              incidents: issues.length,
+              resolved: issues.filter((issue) => issue.status === "Resolved").length,
+            }
+          : month,
+      )
+    : monthlyIncidentData;
+  const data = incidentData.map((month) => ({
     ...month,
     rate: Math.round((month.resolved / month.incidents) * 100),
   }));
@@ -483,7 +582,8 @@ export function TrainScheduleGantt() {
 }
 
 export function MapAnalyticsSummary() {
-  const incidents = generateStationIncidents(56);
+  const { issues: realtimeIncidents } = useRealtimeIssues();
+  const incidents = realtimeIncidents.length ? realtimeIncidents : generateStationIncidents(56);
   const stats = [
     { label: "Total issues", value: incidents.length, icon: ListChecks, tone: "text-primary" },
     {

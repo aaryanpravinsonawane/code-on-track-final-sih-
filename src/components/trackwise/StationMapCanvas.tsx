@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useRealtimeIssues } from "@/hooks/useRealtimeIssues";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/trackwise/shared";
 import { generateStationIncidents } from "@/lib/trackwise/operations";
@@ -8,6 +9,7 @@ type MapIssue = {
   title: string;
   type: "Signal" | "Track" | "OHE" | "Substation" | "Platform" | "Other";
   severity: "Critical" | "High" | "Medium" | "Low";
+  status: "Open" | "Acknowledged" | "In Progress" | "Resolved";
   location: string;
   x: number;
   y: number;
@@ -61,9 +63,12 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
   );
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const { issues: realtimeIncidents, status: realtimeStatus } = useRealtimeIssues();
 
   const issues = useMemo(() => {
-    const incidentList = generateStationIncidents(18);
+    const incidentList = realtimeIncidents.length
+      ? realtimeIncidents
+      : generateStationIncidents(18);
 
     return incidentList.map((incident, index) => {
       const template = mapIssueTemplates[index % mapIssueTemplates.length]!;
@@ -82,25 +87,37 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
         title: incident.title,
         type,
         severity,
+        status: incident.status,
         location: incident.location || assetName,
         x: template.x + ((index % 3) - 1) * 12,
         y: template.y + (index % 2 === 0 ? 12 : -10),
         asset: assetName,
       } satisfies MapIssue;
     });
-  }, []);
+  }, [realtimeIncidents]);
 
   const selectedIssue = issues.find((issue) => issue.id === selected) ?? issues[0];
 
-  const colorFor = (type: MapIssue["type"], severity: MapIssue["severity"]) =>
-    severityColors[severity] ?? typeColors[type] ?? "#38bdf8";
+  const colorFor = (
+    type: MapIssue["type"],
+    severity: MapIssue["severity"],
+    status: MapIssue["status"],
+  ) => {
+    if (status === "Resolved") return "#22c55e";
+    if (severity === "Critical") return "#ef4444";
+    if (severity === "High" || severity === "Medium") return "#fbbf24";
+    return typeColors[type] ?? severityColors[severity] ?? "#38bdf8";
+  };
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
       <Panel
         title="NDG JUNCTION · LIVE SCHEMATIC"
         right={
-          <div className="flex gap-1">
+          <div className="flex items-center gap-2">
+            <span className="hidden text-[10px] font-semibold uppercase tracking-wide text-muted-foreground sm:inline">
+              Realtime: {realtimeStatus}
+            </span>
             <Button
               variant="outline"
               size="sm"
@@ -201,7 +218,8 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
                   key={issue.id}
                   onClick={() => {
                     setSelected(issue.id);
-                    if (typeof window !== "undefined") sessionStorage.setItem("trackwise_map_focus", issue.id);
+                    if (typeof window !== "undefined")
+                      sessionStorage.setItem("trackwise_map_focus", issue.id);
                   }}
                   className="cursor-pointer"
                 >
@@ -209,7 +227,7 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
                     cx={issue.x}
                     cy={issue.y}
                     r={issue.severity === "Critical" ? 12 : 9}
-                    fill={colorFor(issue.type, issue.severity)}
+                    fill={colorFor(issue.type, issue.severity, issue.status)}
                     stroke={selected === issue.id ? "white" : "#0f172a"}
                     strokeWidth="3"
                   />
@@ -218,7 +236,7 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
                     cy={issue.y}
                     r={issue.severity === "Critical" ? 18 : 14}
                     fill="none"
-                    stroke={colorFor(issue.type, issue.severity)}
+                    stroke={colorFor(issue.type, issue.severity, issue.status)}
                     strokeWidth="2"
                     opacity={issue.severity === "Critical" ? 0.8 : 0.5}
                     strokeDasharray={issue.severity === "Critical" ? "4 6" : undefined}
@@ -271,10 +289,28 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
               <p className="text-xs text-muted-foreground">Severity</p>
               <span
                 className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-                style={{ backgroundColor: colorFor(selectedIssue.type, selectedIssue.severity) }}
+                style={{
+                  backgroundColor: colorFor(
+                    selectedIssue.type,
+                    selectedIssue.severity,
+                    selectedIssue.status,
+                  ),
+                }}
               >
                 {selectedIssue.severity}
               </span>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Status</p>
+              <p
+                className={
+                  selectedIssue.status === "Resolved"
+                    ? "font-semibold text-emerald-500"
+                    : "font-semibold text-foreground"
+                }
+              >
+                {selectedIssue.status}
+              </p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Asset</p>

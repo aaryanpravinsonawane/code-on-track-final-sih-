@@ -5,6 +5,7 @@ import { MainShell } from "@/components/trackwise/MainShell";
 import { Panel } from "@/components/trackwise/shared";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { departmentHealth, platforms, tracks } from "@/lib/trackwise/operations";
+import { LiveOperationsFeed } from "@/components/realtime/LiveOperationsFeed";
 
 export const Route = createFileRoute("/live-operations")({
   component: LiveOperations,
@@ -89,6 +90,9 @@ function LiveOperations() {
             ))}
           </div>
         </Panel>
+      </div>
+      <div className="mt-4">
+        <LiveOperationsFeed />
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-3">
         <Panel title="ALERT FEED">

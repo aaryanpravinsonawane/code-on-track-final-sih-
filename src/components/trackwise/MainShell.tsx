@@ -22,10 +22,12 @@ import {
   TrainFront,
   User,
   Wrench,
+  type LucideIcon,
 } from "lucide-react";
 import { useTrackwise } from "@/lib/trackwise/store";
 import { canAccessModule } from "@/lib/trackwise/auth";
 import { Button } from "@/components/ui/button";
+import { NotificationCenter } from "@/components/realtime/NotificationCenter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +45,7 @@ interface NavSection {
 interface NavItem {
   to: string;
   label: string;
-  icon: any;
+  icon: LucideIcon;
   badge?: number;
   module?: string;
 }
@@ -141,7 +143,6 @@ export function MainShell({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(["COMMAND CENTER", "ENGINEERING"]),
   );
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSection = (sectionTitle: string) => {
@@ -176,7 +177,9 @@ export function MainShell({
         onClick={() => setSidebarOpen(false)}
         aria-hidden="true"
       />
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-blue-950/70 bg-[#0f2d6b] text-blue-50 shadow-2xl transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-blue-950/70 bg-[#0f2d6b] text-blue-50 shadow-2xl transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
         {/* Logo */}
         <div className="border-b border-blue-900/80 p-5">
           <div className="flex items-center gap-3">
@@ -231,13 +234,15 @@ export function MainShell({
                           key={item.to}
                           to={item.to}
                           className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-blue-100/70 transition-all hover:bg-white/10 hover:text-white"
-                          activeProps={{ className: "bg-white/12 text-white shadow-[inset_3px_0_0_#fb923c]" }}
+                          activeProps={{
+                            className: "bg-white/12 text-white shadow-[inset_3px_0_0_#fb923c]",
+                          }}
                           onClick={() => setSidebarOpen(false)}
                         >
                           <item.icon className="size-4 text-blue-200/60 transition-colors group-hover:text-orange-300" />
                           <span className="flex-1">{item.label}</span>
                           {item.badge && (
-                              <span className="flex size-5 items-center justify-center rounded-full bg-orange-400 text-[10px] font-bold text-blue-950">
+                            <span className="flex size-5 items-center justify-center rounded-full bg-orange-400 text-[10px] font-bold text-blue-950">
                               {item.badge}
                             </span>
                           )}
@@ -272,19 +277,21 @@ export function MainShell({
           <div className="flex items-center justify-between gap-3 px-4 py-3 text-white sm:px-6">
             {/* Left: Station & Division */}
             <div className="flex items-center gap-6">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 hover:text-white lg:hidden" onClick={() => setSidebarOpen(true)} aria-label="Open navigation">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-white/10 hover:text-white lg:hidden"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open navigation"
+              >
                 <Menu className="size-5" />
               </Button>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-blue-200/70">
-                  Station
-                </p>
+                <p className="text-[10px] uppercase tracking-wider text-blue-200/70">Station</p>
                 <p className="text-sm font-semibold text-white">{user?.station || "NDG"}</p>
               </div>
               <div className="hidden sm:block">
-                <p className="text-[10px] uppercase tracking-wider text-blue-200/70">
-                  Division
-                </p>
+                <p className="text-[10px] uppercase tracking-wider text-blue-200/70">Division</p>
                 <p className="text-sm font-semibold text-white">
                   {user?.division || "Central Division"}
                 </p>
@@ -302,7 +309,7 @@ export function MainShell({
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                 <div>
-                    <p className="text-[10px] uppercase tracking-wider text-blue-200/70">
+                  <p className="text-[10px] uppercase tracking-wider text-blue-200/70">
                     System Status
                   </p>
                   <p className="text-sm font-semibold text-emerald-500">ONLINE</p>
@@ -312,45 +319,12 @@ export function MainShell({
 
             {/* Right: Notifications & User */}
             <div className="flex items-center gap-3">
+              <NotificationCenter />
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative rounded-xl text-white hover:bg-white/10 hover:text-white"
-                onClick={() => setNotificationsOpen((open) => !open)}
-                aria-label="Open notifications"
+                className="hidden rounded-xl text-white hover:bg-white/10 hover:text-white sm:inline-flex"
               >
-                <Bell className="size-5" />
-                <span className="absolute top-1 right-1 size-2 rounded-full bg-destructive" />
-              </Button>
-              {notificationsOpen && (
-                <div className="absolute right-4 top-14 z-40 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-border bg-panel p-3 shadow-2xl">
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="text-sm font-semibold">Notifications</p>
-                    <span className="text-xs text-muted-foreground">4 new</span>
-                  </div>
-                  <div className="space-y-2 text-xs">
-                    <button
-                      className="w-full rounded-md bg-destructive/10 p-2 text-left hover:bg-destructive/20"
-                      onClick={() => navigate({ to: "/incidents" })}
-                    >
-                      Critical: signal S4 failure requires review
-                    </button>
-                    <button
-                      className="w-full rounded-md bg-amber-500/10 p-2 text-left hover:bg-amber-500/20"
-                      onClick={() => navigate({ to: "/work-orders" })}
-                    >
-                      Work order WO-2026-042 generated
-                    </button>
-                    <button
-                      className="w-full rounded-md bg-primary/10 p-2 text-left hover:bg-primary/20"
-                      onClick={() => navigate({ to: "/live-operations" })}
-                    >
-                      Status change: train 12615 delayed 18 min
-                    </button>
-                  </div>
-                </div>
-              )}
-              <Button variant="ghost" size="icon" className="hidden rounded-xl text-white hover:bg-white/10 hover:text-white sm:inline-flex">
                 <AlertTriangle className="size-5 text-warn" />
               </Button>
               <DropdownMenu>
@@ -385,8 +359,12 @@ export function MainShell({
         <main className="flex-1 overflow-y-auto">
           <div className="rail-grid mx-auto max-w-[1800px] px-4 py-5 sm:px-6 sm:py-7">
             <div className="mb-6 border-b border-border/70 pb-5">
-              <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-rail-orange">OPERATIONS / CONTROL VIEW</p>
-              <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+              <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-rail-orange">
+                OPERATIONS / CONTROL VIEW
+              </p>
+              <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                {title}
+              </h1>
               {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
             </div>
             {children}
