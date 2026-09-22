@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiPriorityRouteImport } from './routes/ai-priority'
 import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as CoaRouteImport } from './routes/coa'
 import { Route as ComparisonRouteImport } from './routes/comparison'
@@ -48,6 +49,11 @@ const AiPriorityRoute = AiPriorityRouteImport.update({
 const AlertsRoute = AlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuditRoute = AuditRouteImport.update({
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-priority': typeof AiPriorityRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
   '/audit': typeof AuditRoute
   '/coa': typeof CoaRoute
   '/comparison': typeof ComparisonRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-priority': typeof AiPriorityRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
   '/audit': typeof AuditRoute
   '/coa': typeof CoaRoute
   '/comparison': typeof ComparisonRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ai-priority': typeof AiPriorityRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
   '/audit': typeof AuditRoute
   '/coa': typeof CoaRoute
   '/comparison': typeof ComparisonRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-priority'
     | '/alerts'
+    | '/analytics'
     | '/audit'
     | '/coa'
     | '/comparison'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-priority'
     | '/alerts'
+    | '/analytics'
     | '/audit'
     | '/coa'
     | '/comparison'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-priority'
     | '/alerts'
+    | '/analytics'
     | '/audit'
     | '/coa'
     | '/comparison'
@@ -331,6 +343,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiPriorityRoute: typeof AiPriorityRoute
   AlertsRoute: typeof AlertsRoute
+  AnalyticsRoute: typeof AnalyticsRoute
   AuditRoute: typeof AuditRoute
   CoaRoute: typeof CoaRoute
   ComparisonRoute: typeof ComparisonRoute
@@ -376,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/alerts'
       fullPath: '/alerts'
       preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/audit': {
@@ -539,6 +559,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiPriorityRoute: AiPriorityRoute,
   AlertsRoute: AlertsRoute,
+  AnalyticsRoute: AnalyticsRoute,
   AuditRoute: AuditRoute,
   CoaRoute: CoaRoute,
   ComparisonRoute: ComparisonRoute,

@@ -69,6 +69,7 @@ const NAVIGATION: NavSection[] = [
         badge: 1,
       },
       { to: "/alerts", label: "Alerts", icon: Bell, module: "station_master", badge: 5 },
+      { to: "/analytics", label: "Analytics", icon: BarChart3, module: "analytics" },
     ],
   },
   {

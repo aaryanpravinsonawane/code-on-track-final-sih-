@@ -15,7 +15,9 @@ export const DEPT_BAR: Record<Department, string> = {
 
 export function DeptTag({ dept }: { dept: Department }) {
   return (
-    <span className={`inline-flex rounded border px-2 py-0.5 text-[11px] font-semibold ${DEPT_CLASS[dept]}`}>
+    <span
+      className={`inline-flex rounded border px-2 py-0.5 text-[11px] font-semibold ${DEPT_CLASS[dept]}`}
+    >
       {dept}
     </span>
   );
@@ -54,11 +56,13 @@ export function StatusTag({ status }: { status: string }) {
 
 export function Panel({
   title,
+  subtitle,
   right,
   children,
   className = "",
 }: {
   title?: string;
+  subtitle?: string;
   right?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
@@ -67,9 +71,16 @@ export function Panel({
     <section className={`panel-card ${className}`}>
       {title && (
         <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
-          <h2 className="font-display text-xs font-bold tracking-[0.12em] uppercase text-primary">
-            {title}
-          </h2>
+          <div>
+            <h2 className="font-display text-xs font-bold tracking-[0.12em] uppercase text-primary">
+              {title}
+            </h2>
+            {subtitle && (
+              <p className="mt-1 text-xs font-normal normal-case tracking-normal text-muted-foreground">
+                {subtitle}
+              </p>
+            )}
+          </div>
           {right}
         </header>
       )}

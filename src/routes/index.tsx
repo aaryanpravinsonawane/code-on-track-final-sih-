@@ -28,6 +28,7 @@ import { MainShell } from "@/components/trackwise/MainShell";
 import { ChartBox } from "@/components/trackwise/ChartBox";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { NetworkMap } from "@/components/trackwise/NetworkMap";
+import { RailwayKpiGrid } from "@/components/trackwise/RailwayAnalytics";
 import { DeptTag, Panel, PriorityTag } from "@/components/trackwise/shared";
 import { RESOURCES, SECTIONS, TASKS, TRAINS, WINDOWS, fmt } from "@/lib/trackwise/data";
 import { conflictingTrains, priorityBand, priorityScore } from "@/lib/trackwise/engine";
@@ -87,6 +88,8 @@ function Dashboard() {
     title="RAILWAY MANAGEMENT SYSTEM"
       subtitle="Integrated TMS · TDMS · SMMS · COA · Station Master · AI Priority Engine"
     >
+      <RailwayKpiGrid />
+      <div className="mt-4" />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label="Total Stations" value={5} icon={TrainFront} hint="Across railway division" />
         <KpiCard label="Active Trains" value={TRAINS.length} icon={TrainFront} hint="Scheduled on corridor today" />

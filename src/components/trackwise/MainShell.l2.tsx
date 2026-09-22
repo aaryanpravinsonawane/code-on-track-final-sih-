@@ -57,6 +57,7 @@ const NAVIGATION: NavSection[] = [
       { to: "/ai-priority", label: "AI Priority Queue", icon: Sparkles, module: "ai", badge: 3 },
       { to: "/incidents", label: "Incidents", icon: AlertTriangle, module: "station_master", badge: 1 },
       { to: "/alerts", label: "Alerts", icon: Bell, module: "station_master", badge: 5 },
+      { to: "/analytics", label: "Analytics", icon: BarChart3, module: "analytics" },
     ],
   },
   {
