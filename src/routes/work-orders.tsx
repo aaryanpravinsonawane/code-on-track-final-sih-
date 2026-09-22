@@ -27,8 +27,13 @@ export const Route = createFileRoute("/work-orders")({
 });
 
 function WorkOrderCenter() {
+  type WorkOrderRecord = ReturnType<typeof UnifiedDataLayer.generateWorkOrders>[number];
   const [filter, setFilter] = useState("All");
-  const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
+  const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrderRecord | null>(null);
+
+  const updateSelected = (updates: Partial<WorkOrderRecord>) => {
+    if (selectedWorkOrder) setSelectedWorkOrder({ ...selectedWorkOrder, ...updates });
+  };
 
   const workOrders = UnifiedDataLayer.generateWorkOrders();
 
@@ -79,10 +84,34 @@ function WorkOrderCenter() {
     >
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
-        <KpiCard label="Open" value={openCount} icon={ClipboardList} tone="danger" hint="Pending work orders" />
-        <KpiCard label="Assigned" value={assignedCount} icon={User} tone="warn" hint="Scheduled work" />
-        <KpiCard label="In Progress" value={inProgressCount} icon={Wrench} tone="warn" hint="Currently being worked" />
-        <KpiCard label="Completed" value={completedCount} icon={CheckCircle2} tone="success" hint="Finished work" />
+        <KpiCard
+          label="Open"
+          value={openCount}
+          icon={ClipboardList}
+          tone="danger"
+          hint="Pending work orders"
+        />
+        <KpiCard
+          label="Assigned"
+          value={assignedCount}
+          icon={User}
+          tone="warn"
+          hint="Scheduled work"
+        />
+        <KpiCard
+          label="In Progress"
+          value={inProgressCount}
+          icon={Wrench}
+          tone="warn"
+          hint="Currently being worked"
+        />
+        <KpiCard
+          label="Completed"
+          value={completedCount}
+          icon={CheckCircle2}
+          tone="success"
+          hint="Finished work"
+        />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -138,15 +167,30 @@ function WorkOrderCenter() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedWorkOrder(workOrder)}>
                           <ClipboardList className="size-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setSelectedWorkOrder({
+                              ...workOrder,
+                              assigned: "Track Gang A",
+                              status: "Scheduled",
+                            })
+                          }
+                        >
                           <User className="size-4 mr-2" />
                           Assign Team
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setSelectedWorkOrder({
+                              ...workOrder,
+                              scheduled: "Next available block",
+                            })
+                          }
+                        >
                           <CalendarClock className="size-4 mr-2" />
                           Reschedule
                         </DropdownMenuItem>
@@ -187,7 +231,9 @@ function WorkOrderCenter() {
                 <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <ClipboardList className="size-5 text-primary" />
-                    <span className="text-sm font-semibold text-primary">{selectedWorkOrder.id}</span>
+                    <span className="text-sm font-semibold text-primary">
+                      {selectedWorkOrder.id}
+                    </span>
                   </div>
                   <p className="text-sm text-foreground">{selectedWorkOrder.issue}</p>
                 </div>
@@ -195,11 +241,15 @@ function WorkOrderCenter() {
                 <div className="space-y-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Source System</p>
-                    <p className="text-sm font-semibold text-foreground">{selectedWorkOrder.source}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedWorkOrder.source}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Asset</p>
-                    <p className="text-sm font-semibold text-foreground">{selectedWorkOrder.asset}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedWorkOrder.asset}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Priority</p>
@@ -211,11 +261,15 @@ function WorkOrderCenter() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Assigned</p>
-                    <p className="text-sm font-semibold text-foreground">{selectedWorkOrder.assigned}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedWorkOrder.assigned}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Scheduled</p>
-                    <p className="text-sm font-semibold text-foreground">{selectedWorkOrder.scheduled}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedWorkOrder.scheduled}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Status</p>
@@ -242,15 +296,31 @@ function WorkOrderCenter() {
                 </div>
 
                 <div className="space-y-2">
-                  <Button className="w-full" size="sm">
+                  <Button
+                    className="w-full"
+                    size="sm"
+                    onClick={() =>
+                      updateSelected({ assigned: "Track Gang A", status: "Scheduled" })
+                    }
+                  >
                     <User className="size-4 mr-2" />
                     Assign Team
                   </Button>
-                  <Button className="w-full" variant="outline" size="sm">
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateSelected({ scheduled: "Next available block" })}
+                  >
                     <CalendarClock className="size-4 mr-2" />
                     Reschedule
                   </Button>
-                  <Button className="w-full" variant="outline" size="sm">
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateSelected({ status: "Completed" })}
+                  >
                     <CheckCircle2 className="size-4 mr-2" />
                     Mark Complete
                   </Button>

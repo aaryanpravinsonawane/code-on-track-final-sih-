@@ -150,6 +150,12 @@ function localSnapshot(tick: number): LiveSnapshot {
 const apiBase = import.meta.env.VITE_API_URL ?? "";
 const apiRoot = apiBase.endsWith("/api") ? apiBase : `${apiBase}/api`;
 
+async function readJson(endpoint: string) {
+  const response = await fetch(`${apiRoot}/${endpoint}`);
+  if (!response.ok) throw new Error(`Live API ${endpoint} returned ${response.status}`);
+  return response.json();
+}
+
 export function useLiveSimulation() {
   const [snapshot, setSnapshot] = useState<LiveSnapshot>(() => localSnapshot(1));
   const tick = useRef(1);
@@ -159,7 +165,7 @@ export function useLiveSimulation() {
       try {
         const [trains, signals, tracks, maintenance, kpi] = await Promise.all(
           ["trains", "signals", "tracks", "maintenance", "kpi"].map((endpoint) =>
-            fetch(`${apiRoot}/${endpoint}`).then((response) => response.json()),
+            readJson(endpoint),
           ),
         );
         if (active)
@@ -183,8 +189,13 @@ export function useLiveSimulation() {
       : `ws://${window.location.host}/api/ws`;
     const socket = new WebSocket(websocketUrl);
     socket.onmessage = (event) => {
-      if (active) setSnapshot(JSON.parse(event.data) as LiveSnapshot);
+      try {
+        if (active) setSnapshot(JSON.parse(event.data) as LiveSnapshot);
+      } catch {
+        return;
+      }
     };
+    socket.onerror = () => socket.close();
     return () => {
       active = false;
       window.clearInterval(interval);

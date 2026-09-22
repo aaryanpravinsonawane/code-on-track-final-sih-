@@ -29,8 +29,17 @@ export const Route = createFileRoute("/incidents")({
 });
 
 function IncidentCenter() {
-  const [selectedIncident, setSelectedIncident] = useState<any>(null);
+  type IncidentRecord = ReturnType<typeof UnifiedDataLayer.generateIncidents>[number];
+  const [selectedIncident, setSelectedIncident] = useState<IncidentRecord | null>(null);
   const navigate = useNavigate();
+
+  const assignIncident = (incident: IncidentRecord) => {
+    setSelectedIncident({
+      ...incident,
+      assignedDepartments: Array.from(new Set([...incident.assignedDepartments, "Operations"])),
+      status: incident.status === "Open" ? "In Progress" : incident.status,
+    });
+  };
 
   const viewOnMap = (location: string) => {
     sessionStorage.setItem(
@@ -119,15 +128,15 @@ function IncidentCenter() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => viewOnMap(incident.location)}>
+                        <DropdownMenuItem onClick={() => setSelectedIncident(incident)}>
                           <Eye className="size-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => viewOnMap(incident.location)}>
                           <MapPin className="size-4 mr-2" />
                           View on Map
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => assignIncident(incident)}>
                           <ShieldCheck className="size-4 mr-2" />
                           Assign Department
                         </DropdownMenuItem>
@@ -251,7 +260,7 @@ function IncidentCenter() {
                 <div>
                   <p className="text-xs text-muted-foreground mb-2">Timeline</p>
                   <div className="space-y-2">
-                    {selectedIncident.timeline.map((item: any, index: number) => (
+                    {selectedIncident.timeline.map((item, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <div className="flex flex-col items-center">
                           <div className="size-2 rounded-full bg-primary" />
@@ -269,7 +278,11 @@ function IncidentCenter() {
                 </div>
 
                 <div className="space-y-2">
-                  <Button className="w-full" size="sm">
+                  <Button
+                    className="w-full"
+                    size="sm"
+                    onClick={() => assignIncident(selectedIncident)}
+                  >
                     <ShieldCheck className="size-4 mr-2" />
                     Assign Department
                   </Button>

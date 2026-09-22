@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   AlertTriangle,
@@ -31,7 +31,10 @@ export const Route = createFileRoute("/alerts")({
 
 function AlertCenter() {
   const [filter, setFilter] = useState("All");
-  const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  type AlertRecord = ReturnType<typeof UnifiedDataLayer.generateAlerts>[number];
+  const [selectedAlert, setSelectedAlert] = useState<AlertRecord | null>(null);
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
+  const navigate = useNavigate();
 
   const alerts = UnifiedDataLayer.generateAlerts();
 
@@ -41,9 +44,16 @@ function AlertCenter() {
   const lowCount = alerts.filter((a) => a.severity === "LOW").length;
 
   const filteredAlerts =
-    filter === "All"
-      ? alerts
-      : alerts.filter((a) => a.severity === filter || a.status === filter);
+    filter === "All" ? alerts : alerts.filter((a) => a.severity === filter || a.status === filter);
+
+  const acknowledge = (alert: AlertRecord) => {
+    setAcknowledged((current) => new Set(current).add(alert.id));
+    setSelectedAlert({ ...alert, status: "Acknowledged" });
+  };
+  const viewOnMap = (alert: AlertRecord) => {
+    sessionStorage.setItem("trackwise_map_focus", alert.asset || alert.location);
+    navigate({ to: "/station-map" });
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -82,8 +92,20 @@ function AlertCenter() {
     >
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
-        <KpiCard label="CRITICAL" value={criticalCount} icon={AlertTriangle} tone="danger" hint="Immediate attention" />
-        <KpiCard label="HIGH" value={highCount} icon={ShieldCheck} tone="warn" hint="High priority" />
+        <KpiCard
+          label="CRITICAL"
+          value={criticalCount}
+          icon={AlertTriangle}
+          tone="danger"
+          hint="Immediate attention"
+        />
+        <KpiCard
+          label="HIGH"
+          value={highCount}
+          icon={ShieldCheck}
+          tone="warn"
+          hint="High priority"
+        />
         <KpiCard label="MEDIUM" value={mediumCount} icon={Clock} hint="Standard priority" />
         <KpiCard label="LOW" value={lowCount} icon={CheckCircle2} hint="Low priority" />
       </div>
@@ -140,15 +162,15 @@ function AlertCenter() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedAlert(alert)}>
                           <Eye className="size-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => acknowledge(alert)}>
                           <CheckCircle2 className="size-4 mr-2" />
                           Acknowledge
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => viewOnMap(alert)}>
                           <MapPin className="size-4 mr-2" />
                           View on Map
                         </DropdownMenuItem>
@@ -175,7 +197,7 @@ function AlertCenter() {
                     <span
                       className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(alert.status)}`}
                     >
-                      {alert.status}
+                      {acknowledged.has(alert.id) ? "Acknowledged" : alert.status}
                     </span>
                   </div>
                 </div>
@@ -192,7 +214,9 @@ function AlertCenter() {
                 <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertTriangle className="size-5 text-destructive" />
-                    <span className="text-sm font-semibold text-destructive">{selectedAlert.severity}</span>
+                    <span className="text-sm font-semibold text-destructive">
+                      {selectedAlert.severity}
+                    </span>
                   </div>
                   <p className="text-sm text-foreground">{selectedAlert.description}</p>
                 </div>
@@ -200,7 +224,9 @@ function AlertCenter() {
                 <div className="space-y-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Source System</p>
-                    <p className="text-sm font-semibold text-foreground">{selectedAlert.sourceSystem}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedAlert.sourceSystem}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Station</p>
@@ -208,7 +234,9 @@ function AlertCenter() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Location</p>
-                    <p className="text-sm font-semibold text-foreground">{selectedAlert.location}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedAlert.location}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Asset</p>
@@ -216,13 +244,18 @@ function AlertCenter() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Assigned Department</p>
-                    <p className="text-sm font-semibold text-foreground">{selectedAlert.assignedDepartment}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedAlert.assignedDepartment}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Affected Trains</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {selectedAlert.affectedTrains.map((train: string) => (
-                        <span key={train} className="inline-flex items-center px-2 py-1 rounded bg-primary/10 text-primary text-xs font-mono">
+                        <span
+                          key={train}
+                          className="inline-flex items-center px-2 py-1 rounded bg-primary/10 text-primary text-xs font-mono"
+                        >
                           {train}
                         </span>
                       ))}
@@ -230,20 +263,32 @@ function AlertCenter() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Timestamp</p>
-                    <p className="text-sm font-semibold text-foreground">{new Date(selectedAlert.timestamp).toLocaleString("en-GB")}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {new Date(selectedAlert.timestamp).toLocaleString("en-GB")}
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Button className="w-full" size="sm">
+                  <Button className="w-full" size="sm" onClick={() => acknowledge(selectedAlert)}>
                     <CheckCircle2 className="size-4 mr-2" />
                     Acknowledge Alert
                   </Button>
-                  <Button className="w-full" variant="outline" size="sm">
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => viewOnMap(selectedAlert)}
+                  >
                     <MapPin className="size-4 mr-2" />
                     View on Map
                   </Button>
-                  <Button className="w-full" variant="outline" size="sm">
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate({ to: "/work-orders" })}
+                  >
                     <ShieldCheck className="size-4 mr-2" />
                     Create Work Order
                   </Button>

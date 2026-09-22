@@ -15,6 +15,7 @@ import { Panel } from "@/components/trackwise/shared";
 import { useTrackwise } from "@/lib/trackwise/store";
 import { SECTIONS, TASKS } from "@/lib/trackwise/data";
 import { useLiveSimulation } from "@/lib/liveSimulation";
+import { StationMapCanvas } from "@/components/trackwise/StationMapCanvas";
 
 export const Route = createFileRoute("/tms")({
   component: TMSDashboard,
@@ -83,16 +84,7 @@ function TMSDashboard() {
 
       {/* Track Map */}
       <Panel title="TRACK MAP" className="mb-4">
-        <div className="bg-panel-muted rounded-lg p-8 min-h-[300px] flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="size-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-sm text-muted-foreground mb-2">Interactive Track Map</p>
-            <p className="text-xs text-muted-foreground">
-              Track Sections · Kilometer Markers · Track Condition · Defects · Maintenance Zones ·
-              Work Teams
-            </p>
-          </div>
-        </div>
+        <StationMapCanvas />
       </Panel>
 
       {/* Track Asset Table */}

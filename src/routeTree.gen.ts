@@ -23,6 +23,7 @@ import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as NetworkRouteImport } from './routes/network'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as PlatformStatusRouteImport } from './routes/platform-status'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SignalStatusRouteImport } from './routes/signal-status'
 import { Route as SimulatorRouteImport } from './routes/simulator'
 import { Route as SmmsRouteImport } from './routes/smms'
@@ -106,6 +107,11 @@ const PlatformStatusRoute = PlatformStatusRouteImport.update({
   path: '/platform-status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignalStatusRoute = SignalStatusRouteImport.update({
   id: '/signal-status',
   path: '/signal-status',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/network': typeof NetworkRoute
   '/planner': typeof PlannerRoute
   '/platform-status': typeof PlatformStatusRoute
+  '/reports': typeof ReportsRoute
   '/signal-status': typeof SignalStatusRoute
   '/simulator': typeof SimulatorRoute
   '/smms': typeof SmmsRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/network': typeof NetworkRoute
   '/planner': typeof PlannerRoute
   '/platform-status': typeof PlatformStatusRoute
+  '/reports': typeof ReportsRoute
   '/signal-status': typeof SignalStatusRoute
   '/simulator': typeof SimulatorRoute
   '/smms': typeof SmmsRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/network': typeof NetworkRoute
   '/planner': typeof PlannerRoute
   '/platform-status': typeof PlatformStatusRoute
+  '/reports': typeof ReportsRoute
   '/signal-status': typeof SignalStatusRoute
   '/simulator': typeof SimulatorRoute
   '/smms': typeof SmmsRoute
@@ -269,6 +278,7 @@ export interface FileRouteTypes {
     | '/network'
     | '/planner'
     | '/platform-status'
+    | '/reports'
     | '/signal-status'
     | '/simulator'
     | '/smms'
@@ -297,6 +307,7 @@ export interface FileRouteTypes {
     | '/network'
     | '/planner'
     | '/platform-status'
+    | '/reports'
     | '/signal-status'
     | '/simulator'
     | '/smms'
@@ -325,6 +336,7 @@ export interface FileRouteTypes {
     | '/network'
     | '/planner'
     | '/platform-status'
+    | '/reports'
     | '/signal-status'
     | '/simulator'
     | '/smms'
@@ -354,6 +366,7 @@ export interface RootRouteChildren {
   NetworkRoute: typeof NetworkRoute
   PlannerRoute: typeof PlannerRoute
   PlatformStatusRoute: typeof PlatformStatusRoute
+  ReportsRoute: typeof ReportsRoute
   SignalStatusRoute: typeof SignalStatusRoute
   SimulatorRoute: typeof SimulatorRoute
   SmmsRoute: typeof SmmsRoute
@@ -468,6 +481,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlatformStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signal-status': {
       id: '/signal-status'
       path: '/signal-status'
@@ -570,6 +590,7 @@ const rootRouteChildren: RootRouteChildren = {
   NetworkRoute: NetworkRoute,
   PlannerRoute: PlannerRoute,
   PlatformStatusRoute: PlatformStatusRoute,
+  ReportsRoute: ReportsRoute,
   SignalStatusRoute: SignalStatusRoute,
   SimulatorRoute: SimulatorRoute,
   SmmsRoute: SmmsRoute,

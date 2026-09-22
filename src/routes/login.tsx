@@ -2,7 +2,6 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { TrainFront, ShieldCheck, Clock, AlertCircle, HelpCircle, Lock } from "lucide-react";
 import { authenticate, type LoginCredentials } from "@/lib/trackwise/auth";
-import { ROLES } from "@/lib/trackwise/store";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -20,6 +19,7 @@ function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [supportMessage, setSupportMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,29 +137,14 @@ function LoginPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-                Role
-              </label>
-              <select
-                value={credentials.role}
-                onChange={(e) => setCredentials({ ...credentials, role: e.target.value as any })}
-                className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-              >
-                {ROLES.map((role) => (
-                  <option key={role} value={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 id="remember"
                 checked={credentials.rememberDevice}
-                onChange={(e) => setCredentials({ ...credentials, rememberDevice: e.target.checked })}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, rememberDevice: e.target.checked })
+                }
                 className="rounded border-input bg-background text-primary focus:ring-2 focus:ring-ring"
               />
               <label htmlFor="remember" className="text-xs text-muted-foreground">
@@ -185,14 +170,29 @@ function LoginPage() {
 
           {/* Footer Links */}
           <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs">
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
+            <button
+              type="button"
+              onClick={() =>
+                setSupportMessage("Demo support: use any non-empty Employee ID and password.")
+              }
+              className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
               <HelpCircle className="size-3" />
               Help / Support
             </button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <button
+              type="button"
+              onClick={() =>
+                setSupportMessage("Password recovery is available through the demo support desk.")
+              }
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Forgot password?
             </button>
           </div>
+          {supportMessage && (
+            <p className="mt-3 text-center text-xs text-muted-foreground">{supportMessage}</p>
+          )}
         </div>
 
         {/* Security Notice */}
@@ -210,7 +210,8 @@ function LoginPage() {
         {/* Demo Notice */}
         <div className="mt-4 p-3 bg-warn/10 border border-warn/20 rounded-lg">
           <p className="text-[11px] text-warn-foreground text-center">
-            <strong>DEMO / SIMULATION MODE</strong> — This is a prototype. Does not connect to real railway systems.
+            <strong>DEMO / SIMULATION MODE</strong> — This is a prototype. Does not connect to real
+            railway systems.
           </p>
         </div>
       </div>

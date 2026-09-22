@@ -91,7 +91,7 @@ function COADashboard() {
                 const isDelayed = train.delay_minutes > 10;
 
                 return (
-                  <tr key={train.id} className="border-b border-border hover:bg-panel-muted">
+                  <tr key={train.number} className="border-b border-border hover:bg-panel-muted">
                     <td className="p-3 font-mono font-semibold">{train.number}</td>
                     <td className="p-3">{train.name}</td>
                     <td className="p-3">{train.origin}</td>

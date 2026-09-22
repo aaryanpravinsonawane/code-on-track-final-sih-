@@ -12,6 +12,8 @@ import { KpiCard } from "@/components/trackwise/KpiCard";
 import { Panel } from "@/components/trackwise/shared";
 import { useTrackwise } from "@/lib/trackwise/store";
 import { TASKS } from "@/lib/trackwise/data";
+import { StationMapCanvas } from "@/components/trackwise/StationMapCanvas";
+import { useLiveSimulation } from "@/lib/liveSimulation";
 
 export const Route = createFileRoute("/smms")({
   component: SMMSDashboard,
@@ -19,9 +21,12 @@ export const Route = createFileRoute("/smms")({
 
 function SMMSDashboard() {
   const { user } = useTrackwise();
+  const live = useLiveSimulation();
 
   const signalTasks = TASKS.filter((t) => t.department === "S&T");
-  const healthy = signalTasks.filter((t) => t.criticality === "Low" || t.criticality === "Medium").length;
+  const healthy = signalTasks.filter(
+    (t) => t.criticality === "Low" || t.criticality === "Medium",
+  ).length;
   const warning = signalTasks.filter((t) => t.criticality === "High").length;
   const failed = signalTasks.filter((t) => t.criticality === "Critical").length;
   const maintenanceDue = signalTasks.filter((t) => t.overdueDays > 0).length;
@@ -33,12 +38,47 @@ function SMMSDashboard() {
     >
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
-        <KpiCard label="Total Signals" value={48} icon={Signal} hint="Under management" />
-        <KpiCard label="Healthy Signals" value={healthy} icon={ShieldCheck} tone="success" hint="Normal operation" />
-        <KpiCard label="Warning" value={warning} icon={AlertTriangle} tone="warn" hint="Attention needed" />
-        <KpiCard label="Failed" value={failed} icon={AlertTriangle} tone="danger" hint="Critical failures" />
-        <KpiCard label="Maintenance Due" value={maintenanceDue} icon={CalendarClock} tone="warn" hint="Overdue tasks" />
-        <KpiCard label="Active Signal Incidents" value={1} icon={TrainFront} tone="danger" hint="Current incidents" />
+        <KpiCard
+          label="Total Signals"
+          value={live.signals.length}
+          icon={Signal}
+          hint="Live signal telemetry"
+        />
+        <KpiCard
+          label="Healthy Signals"
+          value={live.signals.filter((signal) => signal.status === "Green").length}
+          icon={ShieldCheck}
+          tone="success"
+          hint="Normal operation"
+        />
+        <KpiCard
+          label="Warning"
+          value={live.signals.filter((signal) => signal.status === "Yellow").length}
+          icon={AlertTriangle}
+          tone="warn"
+          hint="Attention needed"
+        />
+        <KpiCard
+          label="Failed"
+          value={live.signals.filter((signal) => signal.status === "Red").length}
+          icon={AlertTriangle}
+          tone="danger"
+          hint="Critical failures"
+        />
+        <KpiCard
+          label="Maintenance Due"
+          value={maintenanceDue}
+          icon={CalendarClock}
+          tone="warn"
+          hint="Overdue tasks"
+        />
+        <KpiCard
+          label="Active Signal Incidents"
+          value={live.signals.filter((signal) => signal.status === "Red").length}
+          icon={TrainFront}
+          tone="danger"
+          hint="Current incidents"
+        />
       </div>
 
       {/* Signal Failure Alert */}
@@ -65,7 +105,8 @@ function SMMSDashboard() {
           <div className="mt-4 pt-4 border-t border-destructive/20">
             <p className="text-xs text-muted-foreground mb-1">Recommended Action</p>
             <p className="text-sm font-semibold text-foreground">
-              Immediate signal engineering response. Protect affected movements per authorized railway procedures.
+              Immediate signal engineering response. Protect affected movements per authorized
+              railway procedures.
             </p>
           </div>
         </div>
@@ -73,27 +114,73 @@ function SMMSDashboard() {
 
       {/* Railway Signal Map */}
       <Panel title="RAILWAY SIGNAL MAP" className="mb-4">
-        <div className="bg-panel-muted rounded-lg p-8 min-h-[300px] flex items-center justify-center">
-          <div className="text-center">
-            <Signal className="size-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-sm text-muted-foreground mb-2">Interactive Signal Map</p>
-            <p className="text-xs text-muted-foreground">
-              Signal Positions · Signal Health · Fault Locations · Maintenance Zones · Train Approaching
-            </p>
-          </div>
-        </div>
+        <StationMapCanvas />
       </Panel>
 
       {/* Signal Cards */}
       <Panel title="SIGNAL STATUS" className="mb-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
-            { id: "S-204", type: "Colour Light", location: "KM 104/7", state: "Red", health: "Failed", lastInspection: "2026-09-10", fault: "Lamp failure", team: "Signal Crew 1" },
-            { id: "S-205", type: "Colour Light", location: "KM 105/2", state: "Green", health: "Good", lastInspection: "2026-09-15", fault: "None", team: "Signal Crew 2" },
-            { id: "S-206", type: "Distant", location: "KM 106/1", state: "Yellow", health: "Warning", lastInspection: "2026-09-12", fault: "Sighting issue", team: "Signal Crew 1" },
-            { id: "S-207", type: "Shunting", location: "KM 107/3", state: "Green", health: "Good", lastInspection: "2026-09-16", fault: "None", team: "Signal Crew 2" },
-            { id: "S-208", type: "Colour Light", location: "KM 108/5", state: "Green", health: "Good", lastInspection: "2026-09-14", fault: "None", team: "Signal Crew 1" },
-            { id: "S-209", type: "Point Indicator", location: "KM 109/2", state: "Yellow", health: "Warning", lastInspection: "2026-09-11", fault: "Point machine issue", team: "Signal Crew 2" },
+            {
+              id: "S-204",
+              type: "Colour Light",
+              location: "KM 104/7",
+              state: "Red",
+              health: "Failed",
+              lastInspection: "2026-09-10",
+              fault: "Lamp failure",
+              team: "Signal Crew 1",
+            },
+            {
+              id: "S-205",
+              type: "Colour Light",
+              location: "KM 105/2",
+              state: "Green",
+              health: "Good",
+              lastInspection: "2026-09-15",
+              fault: "None",
+              team: "Signal Crew 2",
+            },
+            {
+              id: "S-206",
+              type: "Distant",
+              location: "KM 106/1",
+              state: "Yellow",
+              health: "Warning",
+              lastInspection: "2026-09-12",
+              fault: "Sighting issue",
+              team: "Signal Crew 1",
+            },
+            {
+              id: "S-207",
+              type: "Shunting",
+              location: "KM 107/3",
+              state: "Green",
+              health: "Good",
+              lastInspection: "2026-09-16",
+              fault: "None",
+              team: "Signal Crew 2",
+            },
+            {
+              id: "S-208",
+              type: "Colour Light",
+              location: "KM 108/5",
+              state: "Green",
+              health: "Good",
+              lastInspection: "2026-09-14",
+              fault: "None",
+              team: "Signal Crew 1",
+            },
+            {
+              id: "S-209",
+              type: "Point Indicator",
+              location: "KM 109/2",
+              state: "Yellow",
+              health: "Warning",
+              lastInspection: "2026-09-11",
+              fault: "Point machine issue",
+              team: "Signal Crew 2",
+            },
           ].map((signal) => (
             <div key={signal.id} className="p-4 bg-panel-muted rounded-lg border border-border">
               <div className="flex items-center justify-between mb-3">
@@ -103,8 +190,8 @@ function SMMSDashboard() {
                     signal.health === "Failed"
                       ? "bg-destructive/10 text-destructive"
                       : signal.health === "Warning"
-                      ? "bg-warn/10 text-warn-foreground"
-                      : "bg-emerald-500/10 text-emerald-500"
+                        ? "bg-warn/10 text-warn-foreground"
+                        : "bg-emerald-500/10 text-emerald-500"
                   }`}
                 >
                   {signal.health}
@@ -129,7 +216,11 @@ function SMMSDashboard() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Fault</span>
-                  <span className={signal.fault === "None" ? "text-emerald-500" : "text-destructive"}>{signal.fault}</span>
+                  <span
+                    className={signal.fault === "None" ? "text-emerald-500" : "text-destructive"}
+                  >
+                    {signal.fault}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Assigned Team</span>
@@ -171,8 +262,8 @@ function SMMSDashboard() {
                         task.criticality === "Critical"
                           ? "bg-destructive/10 text-destructive"
                           : task.criticality === "High"
-                          ? "bg-warn/10 text-warn-foreground"
-                          : "bg-emerald-500/10 text-emerald-500"
+                            ? "bg-warn/10 text-warn-foreground"
+                            : "bg-emerald-500/10 text-emerald-500"
                       }`}
                     >
                       {task.criticality}

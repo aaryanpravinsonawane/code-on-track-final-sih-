@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { getEngine } from "./engine";
 import { RESOURCES, TASKS, TRAINS, WINDOWS } from "./data";
 import type { AuditEntry, OptimizationResult, Role } from "./types";
@@ -38,7 +31,13 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window !== "undefined") {
       const stored = sessionStorage.getItem("trackwise_user");
-      return stored ? JSON.parse(stored) : null;
+      if (stored) {
+        try {
+          return JSON.parse(stored) as User;
+        } catch {
+          sessionStorage.removeItem("trackwise_user");
+        }
+      }
     }
     return null;
   });
@@ -92,23 +91,30 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
     (s: PlanStatus, note?: string) => {
       setStatus(s);
       log(
-        s === "approved" ? "Plan approved" : s === "rejected" ? "Plan rejected" : "Plan sent for modification",
+        s === "approved"
+          ? "Plan approved"
+          : s === "rejected"
+            ? "Plan rejected"
+            : "Plan sent for modification",
         note ?? "—",
       );
     },
     [log],
   );
 
-  const setRole = useCallback(
-    (r: Role) => {
-      setRoleState(r);
-      setAudit((a) => [
-        { id: `AL-${++seq}`, at: new Date().toLocaleTimeString("en-GB"), role: r, action: "Role switched", detail: `Active role set to ${r}` },
-        ...a,
-      ]);
-    },
-    [],
-  );
+  const setRole = useCallback((r: Role) => {
+    setRoleState(r);
+    setAudit((a) => [
+      {
+        id: `AL-${++seq}`,
+        at: new Date().toLocaleTimeString("en-GB"),
+        role: r,
+        action: "Role switched",
+        detail: `Active role set to ${r}`,
+      },
+      ...a,
+    ]);
+  }, []);
 
   const value: TrackwiseState = {
     user,
@@ -136,6 +142,13 @@ export function useTrackwise() {
   return c;
 }
 
-export const ROLES: Role[] = ["Management", "Station Master", "Engineering", "S&T", "TRD", "Control Office"];
+export const ROLES: Role[] = [
+  "Management",
+  "Station Master",
+  "Engineering",
+  "S&T",
+  "TRD",
+  "Control Office",
+];
 
 export const canApprove = (role: Role) => role === "Management" || role === "Station Master";

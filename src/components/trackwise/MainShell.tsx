@@ -7,6 +7,7 @@ import {
   BarChart3,
   Bell,
   Building2,
+  CalendarClock,
   ChevronDown,
   ChevronRight,
   ClipboardList,
@@ -72,6 +73,8 @@ const NAVIGATION: NavSection[] = [
       },
       { to: "/alerts", label: "Alerts", icon: Bell, module: "station_master", badge: 5 },
       { to: "/analytics", label: "Analytics", icon: BarChart3, module: "analytics" },
+      { to: "/reports", label: "Reports", icon: ClipboardList, module: "analytics" },
+      { to: "/network", label: "Network", icon: Map, module: "station_master" },
     ],
   },
   {
@@ -85,6 +88,7 @@ const NAVIGATION: NavSection[] = [
       { to: "/tdms", label: "TDMS", icon: Gauge, module: "tdms" },
       { to: "/smms", label: "SMMS", icon: ShieldCheck, module: "smms" },
       { to: "/work-orders", label: "Work Orders", icon: ClipboardList, module: "engineering" },
+      { to: "/maintenance", label: "Maintenance", icon: CalendarClock, module: "engineering" },
     ],
   },
   {
@@ -118,6 +122,7 @@ const NAVIGATION: NavSection[] = [
     items: [
       { to: "/comparison", label: "Performance Comparison", icon: BarChart3, module: "analytics" },
       { to: "/audit", label: "Operational Audit", icon: ClipboardList, module: "analytics" },
+      { to: "/timeline", label: "Operations Timeline", icon: Activity, module: "analytics" },
     ],
   },
   {
@@ -324,6 +329,8 @@ export function MainShell({
                 variant="ghost"
                 size="icon"
                 className="hidden rounded-xl text-white hover:bg-white/10 hover:text-white sm:inline-flex"
+                onClick={() => navigate({ to: "/alerts" })}
+                aria-label="Open alerts"
               >
                 <AlertTriangle className="size-5 text-warn" />
               </Button>
@@ -336,11 +343,11 @@ export function MainShell({
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate({ to: "/station-master" })}>
                     <User className="size-4 mr-2" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate({ to: "/audit" })}>
                     <Settings className="size-4 mr-2" />
                     Settings
                   </DropdownMenuItem>

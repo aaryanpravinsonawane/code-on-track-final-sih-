@@ -7,7 +7,7 @@ import { generateStationIncidents } from "@/lib/trackwise/operations";
 type MapIssue = {
   id: string;
   title: string;
-  type: "Signal" | "Track" | "OHE" | "Substation" | "Platform" | "Other";
+  type: "Signal" | "Track" | "Traction" | "Maintenance" | "Substation" | "Platform" | "Other";
   severity: "Critical" | "High" | "Medium" | "Low";
   status: "Open" | "Acknowledged" | "In Progress" | "Resolved";
   location: string;
@@ -20,13 +20,13 @@ const mapIssueTemplates: Array<Pick<MapIssue, "type" | "severity" | "x" | "y" | 
   { type: "Signal", severity: "Critical", x: 220, y: 120, asset: "S-204" },
   { type: "Track", severity: "High", x: 360, y: 190, asset: "UP-MAIN" },
   { type: "Platform", severity: "Medium", x: 140, y: 250, asset: "P2" },
-  { type: "OHE", severity: "Critical", x: 530, y: 310, asset: "OHE-02" },
+  { type: "Traction", severity: "Critical", x: 530, y: 310, asset: "OHE-02" },
   { type: "Substation", severity: "Medium", x: 760, y: 120, asset: "SS-01" },
   { type: "Signal", severity: "Low", x: 660, y: 190, asset: "S-412" },
   { type: "Track", severity: "Medium", x: 590, y: 105, asset: "S3" },
   { type: "Platform", severity: "High", x: 140, y: 420, asset: "P6" },
   { type: "Substation", severity: "High", x: 760, y: 360, asset: "SS-02" },
-  { type: "Other", severity: "Low", x: 470, y: 410, asset: "CONTROL" },
+  { type: "Maintenance", severity: "Low", x: 470, y: 410, asset: "BLK-101" },
 ];
 
 const severityColors: Record<MapIssue["severity"], string> = {
@@ -39,7 +39,8 @@ const severityColors: Record<MapIssue["severity"], string> = {
 const typeColors: Record<MapIssue["type"], string> = {
   Signal: "#f59e0b",
   Track: "#ef4444",
-  OHE: "#8b5cf6",
+  Traction: "#8b5cf6",
+  Maintenance: "#34d399",
   Substation: "#a78bfa",
   Platform: "#38bdf8",
   Other: "#34d399",
@@ -48,7 +49,8 @@ const typeColors: Record<MapIssue["type"], string> = {
 const typeLabel: Record<MapIssue["type"], string> = {
   Signal: "Signal",
   Track: "Track",
-  OHE: "OHE",
+  Traction: "Traction",
+  Maintenance: "Maintenance",
   Substation: "Substation",
   Platform: "Platform",
   Other: "Issue",
@@ -63,6 +65,7 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
   );
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
   const { issues: realtimeIncidents, status: realtimeStatus } = useRealtimeIssues();
 
   const issues = useMemo(() => {
@@ -148,21 +151,30 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
         <div className="relative h-[560px] overflow-hidden rounded-md border border-border bg-[#08131b]">
           <svg
             viewBox="0 0 900 500"
-            className="h-full w-full cursor-grab"
+            className={`h-full w-full ${isPanning ? "cursor-grabbing" : "cursor-grab"}`}
             role="img"
             aria-label="Interactive railway station schematic with all active issues"
             onWheel={(event) => {
               event.preventDefault();
               setScale((value) => Math.max(0.7, Math.min(1.8, value - event.deltaY / 1500)));
             }}
+            onPointerDown={(event) => {
+              event.currentTarget.setPointerCapture(event.pointerId);
+              setIsPanning(true);
+            }}
             onPointerMove={(event) => {
-              if (event.buttons === 1) {
+              if (isPanning) {
                 setOffset((value) => ({
                   x: value.x + event.movementX,
                   y: value.y + event.movementY,
                 }));
               }
             }}
+            onPointerUp={(event) => {
+              event.currentTarget.releasePointerCapture(event.pointerId);
+              setIsPanning(false);
+            }}
+            onPointerCancel={() => setIsPanning(false)}
           >
             <g transform={`translate(${offset.x} ${offset.y}) scale(${scale})`}>
               <rect width="900" height="500" fill="#08131b" />

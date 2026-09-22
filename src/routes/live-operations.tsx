@@ -100,7 +100,13 @@ function LiveOperations() {
                 </div>
                 <div className="mt-2 h-2 rounded-full bg-muted">
                   <div
-                    className={`h-2 rounded-full ${department.color}`}
+                    className={`h-2 rounded-full ${
+                      department.health >= 95
+                        ? "bg-emerald-500"
+                        : department.health >= 85
+                          ? "bg-amber-500"
+                          : "bg-destructive"
+                    }`}
                     style={{ width: `${department.health}%` }}
                   />
                 </div>
