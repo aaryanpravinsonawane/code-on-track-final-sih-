@@ -4,7 +4,7 @@
 
 export type Department = "Engineering" | "S&T" | "TRD";
 
-export type Role = "Management" | "Station Master" | "Engineering" | "S&T" | "TRD" | "Control Office" | "Admin" | "Viewer";
+export type Role = "Management" | "Station Master" | "Engineering" | "S&T" | "TRD" | "Control Office";
 
 export type TrainType = "Express" | "Superfast" | "Passenger" | "Suburban" | "Freight";
 

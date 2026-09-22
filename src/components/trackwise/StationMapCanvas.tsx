@@ -1,48 +1,102 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/trackwise/shared";
+import { generateStationIncidents } from "@/lib/trackwise/operations";
 
-const mapAssets = [
-  ...Array.from({ length: 6 }, (_, i) => ({
-    id: `P${i + 1}`,
-    type: "Platform",
-    x: 120,
-    y: 70 + i * 58,
-  })),
-  ...Array.from({ length: 12 }, (_, i) => ({
-    id: `S${i + 1}`,
-    type: "Signal",
-    x: 255 + (i % 3) * 270,
-    y: 52 + Math.floor(i / 3) * 116,
-  })),
-  { id: "SS-01", type: "Substation", x: 760, y: 80 },
-  { id: "SS-02", type: "Substation", x: 760, y: 310 },
-  { id: "OHE-02", type: "OHE", x: 520, y: 370 },
-  { id: "INC-124", type: "Incident", x: 500, y: 180 },
+type MapIssue = {
+  id: string;
+  title: string;
+  type: "Signal" | "Track" | "OHE" | "Substation" | "Platform" | "Other";
+  severity: "Critical" | "High" | "Medium" | "Low";
+  location: string;
+  x: number;
+  y: number;
+  asset: string;
+};
+
+const mapIssueTemplates: Array<Pick<MapIssue, "type" | "severity" | "x" | "y" | "asset">> = [
+  { type: "Signal", severity: "Critical", x: 220, y: 120, asset: "S-204" },
+  { type: "Track", severity: "High", x: 360, y: 190, asset: "UP-MAIN" },
+  { type: "Platform", severity: "Medium", x: 140, y: 250, asset: "P2" },
+  { type: "OHE", severity: "Critical", x: 530, y: 310, asset: "OHE-02" },
+  { type: "Substation", severity: "Medium", x: 760, y: 120, asset: "SS-01" },
+  { type: "Signal", severity: "Low", x: 660, y: 190, asset: "S-412" },
+  { type: "Track", severity: "Medium", x: 590, y: 105, asset: "S3" },
+  { type: "Platform", severity: "High", x: 140, y: 420, asset: "P6" },
+  { type: "Substation", severity: "High", x: 760, y: 360, asset: "SS-02" },
+  { type: "Other", severity: "Low", x: 470, y: 410, asset: "CONTROL" },
 ];
+
+const severityColors: Record<MapIssue["severity"], string> = {
+  Critical: "#ef4444",
+  High: "#f97316",
+  Medium: "#fbbf24",
+  Low: "#22c55e",
+};
+
+const typeColors: Record<MapIssue["type"], string> = {
+  Signal: "#f59e0b",
+  Track: "#ef4444",
+  OHE: "#8b5cf6",
+  Substation: "#a78bfa",
+  Platform: "#38bdf8",
+  Other: "#34d399",
+};
+
+const typeLabel: Record<MapIssue["type"], string> = {
+  Signal: "Signal",
+  Track: "Track",
+  OHE: "OHE",
+  Substation: "Substation",
+  Platform: "Platform",
+  Other: "Issue",
+};
 
 export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
   const [selected, setSelected] = useState(
     () =>
       focusAsset ??
       (typeof window !== "undefined" ? sessionStorage.getItem("trackwise_map_focus") : null) ??
-      "P2",
+      "INC-2026-001",
   );
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const asset = mapAssets.find((item) => item.id === selected) ?? mapAssets[0];
-  const colorFor = (type: string) =>
-    type === "Signal"
-      ? "#f59e0b"
-      : type === "Platform"
-        ? "#38bdf8"
-        : type === "Incident"
-          ? "#ef4444"
-          : type === "Substation"
-            ? "#a78bfa"
-            : "#34d399";
+
+  const issues = useMemo(() => {
+    const incidentList = generateStationIncidents(18);
+
+    return incidentList.map((incident, index) => {
+      const template = mapIssueTemplates[index % mapIssueTemplates.length]!;
+      const severityLookup: Record<string, MapIssue["severity"]> = {
+        CRITICAL: "Critical",
+        HIGH: "High",
+        MEDIUM: "Medium",
+        LOW: "Low",
+      };
+      const type = template.type;
+      const severity = severityLookup[incident.severity] ?? "Medium";
+      const assetName = incident.asset || template.asset;
+
+      return {
+        id: incident.id,
+        title: incident.title,
+        type,
+        severity,
+        location: incident.location || assetName,
+        x: template.x + ((index % 3) - 1) * 12,
+        y: template.y + (index % 2 === 0 ? 12 : -10),
+        asset: assetName,
+      } satisfies MapIssue;
+    });
+  }, []);
+
+  const selectedIssue = issues.find((issue) => issue.id === selected) ?? issues[0];
+
+  const colorFor = (type: MapIssue["type"], severity: MapIssue["severity"]) =>
+    severityColors[severity] ?? typeColors[type] ?? "#38bdf8";
+
   return (
-    <div className="grid gap-4 xl:grid-cols-[1fr_280px]">
+    <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
       <Panel
         title="NDG JUNCTION · LIVE SCHEMATIC"
         right={
@@ -79,17 +133,18 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
             viewBox="0 0 900 500"
             className="h-full w-full cursor-grab"
             role="img"
-            aria-label="Interactive railway station schematic"
+            aria-label="Interactive railway station schematic with all active issues"
             onWheel={(event) => {
               event.preventDefault();
               setScale((value) => Math.max(0.7, Math.min(1.8, value - event.deltaY / 1500)));
             }}
             onPointerMove={(event) => {
-              if (event.buttons === 1)
+              if (event.buttons === 1) {
                 setOffset((value) => ({
                   x: value.x + event.movementX,
                   y: value.y + event.movementY,
                 }));
+              }
             }}
           >
             <g transform={`translate(${offset.x} ${offset.y}) scale(${scale})`}>
@@ -141,36 +196,35 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
                 stroke="#94a3b8"
                 strokeWidth="3"
               />
-              {mapAssets.map((item) => (
-                <g key={item.id} onClick={() => setSelected(item.id)} className="cursor-pointer">
+              {issues.map((issue) => (
+                <g
+                  key={issue.id}
+                  onClick={() => {
+                    setSelected(issue.id);
+                    if (typeof window !== "undefined") sessionStorage.setItem("trackwise_map_focus", issue.id);
+                  }}
+                  className="cursor-pointer"
+                >
                   <circle
-                    cx={item.x}
-                    cy={item.y}
-                    r={item.type === "Incident" ? 11 : 8}
-                    fill={colorFor(item.type)}
-                    stroke={selected === item.id ? "white" : "#0f172a"}
+                    cx={issue.x}
+                    cy={issue.y}
+                    r={issue.severity === "Critical" ? 12 : 9}
+                    fill={colorFor(issue.type, issue.severity)}
+                    stroke={selected === issue.id ? "white" : "#0f172a"}
                     strokeWidth="3"
                   />
-                  {item.type === "Incident" && (
-                    <circle
-                      cx={item.x}
-                      cy={item.y}
-                      r="17"
-                      fill="none"
-                      stroke="#ef4444"
-                      strokeWidth="2"
-                      opacity=".7"
-                    >
-                      <animate
-                        attributeName="r"
-                        values="12;24;12"
-                        dur="1.7s"
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                  )}
-                  <text x={item.x + 13} y={item.y + 4} fill="#e2e8f0" fontSize="12">
-                    {item.id}
+                  <circle
+                    cx={issue.x}
+                    cy={issue.y}
+                    r={issue.severity === "Critical" ? 18 : 14}
+                    fill="none"
+                    stroke={colorFor(issue.type, issue.severity)}
+                    strokeWidth="2"
+                    opacity={issue.severity === "Critical" ? 0.8 : 0.5}
+                    strokeDasharray={issue.severity === "Critical" ? "4 6" : undefined}
+                  />
+                  <text x={issue.x + 13} y={issue.y + 4} fill="#e2e8f0" fontSize="11">
+                    {issue.asset}
                   </text>
                 </g>
               ))}
@@ -202,31 +256,45 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
           </svg>
         </div>
       </Panel>
-      <Panel title="ASSET DETAILS">
-        <div className="space-y-3 text-sm">
-          <div>
-            <p className="text-xs text-muted-foreground">Selected asset</p>
-            <p className="font-mono text-lg font-bold text-primary">{asset?.id}</p>
+      <Panel title="ISSUE DETAILS">
+        {selectedIssue ? (
+          <div className="space-y-3 text-sm">
+            <div>
+              <p className="text-xs text-muted-foreground">Issue ID</p>
+              <p className="font-mono text-lg font-bold text-primary">{selectedIssue.id}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Type</p>
+              <p className="font-semibold">{typeLabel[selectedIssue.type]}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Severity</p>
+              <span
+                className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold text-white"
+                style={{ backgroundColor: colorFor(selectedIssue.type, selectedIssue.severity) }}
+              >
+                {selectedIssue.severity}
+              </span>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Asset</p>
+              <p className="font-semibold">{selectedIssue.asset}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Location</p>
+              <p className="font-semibold">{selectedIssue.location}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Title</p>
+              <p className="font-medium text-foreground">{selectedIssue.title}</p>
+            </div>
+            <div className="border-t border-border pt-3 text-xs text-muted-foreground">
+              {issues.length} active issue markers currently shown on the schematic.
+            </div>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Type</p>
-            <p className="font-semibold">{asset?.type}</p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Location</p>
-            <p className="font-semibold">
-              NDG Station · Control Zone {asset?.id?.slice(-1) ?? "2"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Status</p>
-            <p className="font-semibold text-emerald-500">Telemetry available</p>
-          </div>
-          <div className="border-t border-border pt-3 text-xs text-muted-foreground">
-            Click any platform, signal, OHE asset, substation or incident marker. Drag the schematic
-            to pan.
-          </div>
-        </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">No issue selected</div>
+        )}
       </Panel>
     </div>
   );

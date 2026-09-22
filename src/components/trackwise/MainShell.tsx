@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ChevronRight,
   ClipboardList,
-  Cog,
   Gauge,
   LayoutDashboard,
   LogOut,
@@ -124,10 +123,6 @@ const NAVIGATION: NavSection[] = [
       { to: "/ai-priority", label: "AI Priority Engine", icon: Sparkles, module: "ai" },
       { to: "/simulator", label: "What-If Simulation", icon: Activity, module: "ai" },
     ],
-  },
-  {
-    title: "ADMINISTRATION",
-    items: [{ to: "/audit", label: "Audit Logs", icon: ClipboardList, module: "admin" }],
   },
 ];
 

@@ -51,6 +51,7 @@ export class AIPriorityEngine {
       maintenanceUrgency: 4,
       resourceAvailability: 2,
       historicalRisk: 1,
+      operationalConditions: 0,
     };
 
     // Calculate individual factor scores (0-10)
@@ -65,6 +66,7 @@ export class AIPriorityEngine {
       maintenanceUrgency: this.getMaintenanceUrgency(task),
       resourceAvailability: this.getResourceAvailability(task),
       historicalRisk: this.getHistoricalRisk(task),
+      operationalConditions: this.getOperationalConditions(task),
     };
 
     // Calculate weighted score
@@ -166,6 +168,13 @@ export class AIPriorityEngine {
     // In real system, check historical failure patterns
     // For simulation, use moderate risk
     return 5;
+  }
+
+  private static getOperationalConditions(task: MaintenanceTask): number {
+    if (task.status === "Deferred") return 3;
+    if (task.section === "S1" || task.section === "S3") return 8;
+    if (task.section === "S2") return 6;
+    return 4;
   }
 
   private static calculateConfidence(task: MaintenanceTask, affectedTrains: Train[]): number {

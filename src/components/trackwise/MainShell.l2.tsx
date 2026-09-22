@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ChevronRight,
   ClipboardList,
-  Cog,
   Gauge,
   LayoutDashboard,
   LogOut,
@@ -109,18 +108,6 @@ const NAVIGATION: NavSection[] = [
       { to: "/predictive-maintenance", label: "Predictive Maintenance", icon: Sparkles, module: "ai" },
       { to: "/conflict-detection", label: "Conflict Detection", icon: AlertTriangle, module: "ai" },
       { to: "/what-if-simulation", label: "What-If Simulation", icon: Activity, module: "ai" },
-    ],
-  },
-  {
-    title: "ADMINISTRATION",
-    items: [
-      { to: "/admin/users", label: "Users", icon: User, module: "admin" },
-      { to: "/admin/roles", label: "Roles", icon: ShieldCheck, module: "admin" },
-      { to: "/admin/permissions", label: "Permissions", icon: ShieldCheck, module: "admin" },
-      { to: "/admin/stations", label: "Stations", icon: Building2, module: "admin" },
-      { to: "/admin/departments", label: "Departments", icon: Building2, module: "admin" },
-      { to: "/admin/audit-logs", label: "Audit Logs", icon: ClipboardList, module: "admin" },
-      { to: "/admin/system-config", label: "System Configuration", icon: Cog, module: "admin" },
     ],
   },
 ];

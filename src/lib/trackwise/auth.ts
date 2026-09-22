@@ -4,7 +4,7 @@ export interface User {
   id: string;
   employeeId: string;
   name: string;
-  role: "Management" | "Station Master" | "Engineering" | "S&T" | "TRD" | "Control Office" | "Admin" | "Viewer";
+  role: "Management" | "Station Master" | "Engineering" | "S&T" | "TRD" | "Control Office";
   department: string;
   station: string;
   division: string;

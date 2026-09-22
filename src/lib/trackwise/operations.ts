@@ -129,7 +129,7 @@ const severities: StationIncident["severity"][] = ["Critical", "High", "Medium",
 
 export function generateStationIncidents(count = 56): StationIncident[] {
   return Array.from({ length: count }, (_, index) => {
-    const severity = severities[index % severities.length];
+    const severity = severities[index % severities.length] ?? "Medium";
     const status: IncidentStatus =
       index % 9 === 0
         ? "Resolved"

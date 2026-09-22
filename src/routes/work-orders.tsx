@@ -81,7 +81,7 @@ function WorkOrderCenter() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
         <KpiCard label="Open" value={openCount} icon={ClipboardList} tone="danger" hint="Pending work orders" />
         <KpiCard label="Assigned" value={assignedCount} icon={User} tone="warn" hint="Scheduled work" />
-        <KpiCard label="In Progress" value={inProgressCount} icon={Wrench} tone="primary" hint="Currently being worked" />
+        <KpiCard label="In Progress" value={inProgressCount} icon={Wrench} tone="warn" hint="Currently being worked" />
         <KpiCard label="Completed" value={completedCount} icon={CheckCircle2} tone="success" hint="Finished work" />
       </div>
 

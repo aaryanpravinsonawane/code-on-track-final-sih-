@@ -136,6 +136,6 @@ export function useTrackwise() {
   return c;
 }
 
-export const ROLES: Role[] = ["Management", "Station Master", "Engineering", "S&T", "TRD", "Control Office", "Admin", "Viewer"];
+export const ROLES: Role[] = ["Management", "Station Master", "Engineering", "S&T", "TRD", "Control Office"];
 
-export const canApprove = (role: Role) => role === "Admin" || role === "Controller";
+export const canApprove = (role: Role) => role === "Management" || role === "Station Master";
