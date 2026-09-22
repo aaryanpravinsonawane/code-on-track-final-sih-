@@ -5,6 +5,7 @@ import { MainShell } from "@/components/trackwise/MainShell";
 import { DeptTag, Panel } from "@/components/trackwise/shared";
 import { TASKS, fmt } from "@/lib/trackwise/data";
 import { canApprove, useTrackwise } from "@/lib/trackwise/store";
+import { AIOperationsCenter } from "@/components/trackwise/AIOperationsCenter";
 
 export const Route = createFileRoute("/planner")({
   head: () => ({
@@ -100,6 +101,8 @@ function PlannerPage() {
           )}
         </div>
       </Panel>
+
+      <AIOperationsCenter />
 
       {plan && (
         <>
