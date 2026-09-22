@@ -13,6 +13,7 @@ import { KpiCard } from "@/components/trackwise/KpiCard";
 import { Panel } from "@/components/trackwise/shared";
 import { useTrackwise } from "@/lib/trackwise/store";
 import { TRAINS, fmt } from "@/lib/trackwise/data";
+import { useLiveSimulation } from "@/lib/liveSimulation";
 
 export const Route = createFileRoute("/coa")({
   component: COADashboard,
@@ -20,8 +21,9 @@ export const Route = createFileRoute("/coa")({
 
 function COADashboard() {
   const { user } = useTrackwise();
+  const live = useLiveSimulation();
 
-  const delayedTrains = TRAINS.filter((t) => t.id === "12951" || t.id === "12841"); // Simulated delayed trains
+  const delayedTrains = live.trains.filter((train) => train.delay_minutes > 10);
 
   return (
     <MainShell
@@ -30,10 +32,36 @@ function COADashboard() {
     >
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
-        <KpiCard label="Total Trains" value={TRAINS.length} icon={TrainFront} hint="Scheduled today" />
-        <KpiCard label="On Time" value={TRAINS.length - delayedTrains.length} icon={Activity} tone="success" hint="Running on schedule" />
-        <KpiCard label="Delayed" value={delayedTrains.length} icon={AlertTriangle} tone="warn" hint="Currently delayed" />
-        <KpiCard label="Average Delay" value={12} unit=" min" icon={CalendarClock} tone="warn" hint="Across all trains" />
+        <KpiCard
+          label="Total Trains"
+          value={live.trains.length}
+          icon={TrainFront}
+          hint="Live corridor feed"
+        />
+        <KpiCard
+          label="On Time"
+          value={live.trains.length - delayedTrains.length}
+          icon={Activity}
+          tone="success"
+          hint="Running on schedule"
+        />
+        <KpiCard
+          label="Delayed"
+          value={delayedTrains.length}
+          icon={AlertTriangle}
+          tone="warn"
+          hint="Currently delayed"
+        />
+        <KpiCard
+          label="Average Delay"
+          value={Math.round(
+            live.trains.reduce((sum, train) => sum + train.delay_minutes, 0) / live.trains.length,
+          )}
+          unit=" min"
+          icon={CalendarClock}
+          tone="warn"
+          hint="From live train feed"
+        />
       </div>
 
       {/* Train Operations Table */}
@@ -46,7 +74,9 @@ function COADashboard() {
                 <th className="text-left p-3 font-semibold text-muted-foreground">Train Name</th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Origin</th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Destination</th>
-                <th className="text-left p-3 font-semibold text-muted-foreground">Current Station</th>
+                <th className="text-left p-3 font-semibold text-muted-foreground">
+                  Current Station
+                </th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Next Station</th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Scheduled</th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Actual</th>
@@ -57,26 +87,25 @@ function COADashboard() {
               </tr>
             </thead>
             <tbody>
-              {TRAINS.slice(0, 8).map((train) => {
-                const isDelayed = delayedTrains.some((t) => t.id === train.id);
-                const delayMinutes = isDelayed ? Math.floor(Math.random() * 30) + 5 : 0;
-                const stationCode = train.section === "S1" ? "NDG" : train.section === "S2" ? "KRP" : train.section === "S3" ? "STP" : "DVR";
-                const nextStationCode = train.section === "S1" ? "KRP" : train.section === "S2" ? "STP" : train.section === "S3" ? "DVR" : "MRG";
+              {live.trains.map((train) => {
+                const isDelayed = train.delay_minutes > 10;
 
                 return (
                   <tr key={train.id} className="border-b border-border hover:bg-panel-muted">
-                    <td className="p-3 font-mono font-semibold">{train.id}</td>
+                    <td className="p-3 font-mono font-semibold">{train.number}</td>
                     <td className="p-3">{train.name}</td>
-                    <td className="p-3">{stationCode}</td>
-                    <td className="p-3">{nextStationCode}</td>
-                    <td className="p-3">{stationCode}</td>
-                    <td className="p-3">{nextStationCode}</td>
-                    <td className="p-3 font-mono">{fmt(train.arrival)}</td>
-                    <td className="p-3 font-mono">{fmt(train.arrival + delayMinutes)}</td>
+                    <td className="p-3">{train.origin}</td>
+                    <td className="p-3">{train.destination}</td>
+                    <td className="p-3">{train.section}</td>
+                    <td className="p-3">KM {train.position_km}</td>
+                    <td className="p-3 font-mono">{train.speed_kmph} km/h</td>
+                    <td className="p-3 font-mono">
+                      +{train.delay_prediction_minutes} min predicted
+                    </td>
                     <td className="p-3">
-                      {delayMinutes > 0 ? (
+                      {isDelayed ? (
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-warn/10 text-warn-foreground">
-                          +{delayMinutes} min
+                          +{train.delay_minutes} min
                         </span>
                       ) : (
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500">
@@ -84,8 +113,10 @@ function COADashboard() {
                         </span>
                       )}
                     </td>
-                    <td className="p-3 font-mono">P-{Math.floor(Math.random() * 4) + 1}</td>
-                    <td className="p-3 font-mono">T-{Math.floor(Math.random() * 3) + 1}</td>
+                    <td className="p-3 font-mono">
+                      P-{((Number(train.number.replace(/\D/g, "")) || 1) % 4) + 1}
+                    </td>
+                    <td className="p-3 font-mono">T-{train.section.slice(1)}</td>
                     <td className="p-3">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
@@ -125,8 +156,8 @@ function COADashboard() {
                     item.status === "completed"
                       ? "bg-emerald-500"
                       : item.status === "in_progress"
-                      ? "bg-primary animate-pulse"
-                      : "bg-muted-foreground"
+                        ? "bg-primary animate-pulse"
+                        : "bg-muted-foreground"
                   }`}
                 />
                 {index < 7 && <div className="w-0.5 h-8 bg-border" />}

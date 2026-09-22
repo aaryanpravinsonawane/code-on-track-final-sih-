@@ -14,6 +14,7 @@ import { KpiCard } from "@/components/trackwise/KpiCard";
 import { Panel } from "@/components/trackwise/shared";
 import { useTrackwise } from "@/lib/trackwise/store";
 import { SECTIONS, TASKS } from "@/lib/trackwise/data";
+import { useLiveSimulation } from "@/lib/liveSimulation";
 
 export const Route = createFileRoute("/tms")({
   component: TMSDashboard,
@@ -21,9 +22,12 @@ export const Route = createFileRoute("/tms")({
 
 function TMSDashboard() {
   const { user } = useTrackwise();
+  const live = useLiveSimulation();
 
   const trackTasks = TASKS.filter((t) => t.department === "Engineering");
-  const healthy = trackTasks.filter((t) => t.criticality === "Low" || t.criticality === "Medium").length;
+  const healthy = trackTasks.filter(
+    (t) => t.criticality === "Low" || t.criticality === "Medium",
+  ).length;
   const attention = trackTasks.filter((t) => t.criticality === "High").length;
   const critical = trackTasks.filter((t) => t.criticality === "Critical").length;
   const maintenanceDue = trackTasks.filter((t) => t.overdueDays > 0).length;
@@ -35,12 +39,46 @@ function TMSDashboard() {
     >
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
-        <KpiCard label="Total Track Sections" value={SECTIONS.length} icon={TrainFront} hint="Under management" />
-        <KpiCard label="Healthy" value={healthy} icon={ShieldCheck} tone="success" hint="Normal condition" />
-        <KpiCard label="Attention Required" value={attention} icon={AlertTriangle} tone="warn" hint="High priority issues" />
-        <KpiCard label="Critical" value={critical} icon={AlertTriangle} tone="danger" hint="Immediate action needed" />
-        <KpiCard label="Maintenance Due" value={maintenanceDue} icon={CalendarClock} tone="warn" hint="Overdue tasks" />
-        <KpiCard label="Active Blocks" value={3} icon={Wrench} hint="Current maintenance blocks" />
+        <KpiCard
+          label="Total Track Sections"
+          value={SECTIONS.length}
+          icon={TrainFront}
+          hint="Under management"
+        />
+        <KpiCard
+          label="Healthy"
+          value={live.tracks.filter((track) => track.condition === "Healthy").length}
+          icon={ShieldCheck}
+          tone="success"
+          hint="Live track condition"
+        />
+        <KpiCard
+          label="Attention Required"
+          value={live.tracks.filter((track) => track.condition === "Warning").length}
+          icon={AlertTriangle}
+          tone="warn"
+          hint="Live track condition"
+        />
+        <KpiCard
+          label="Critical"
+          value={live.tracks.filter((track) => track.condition === "Critical").length}
+          icon={AlertTriangle}
+          tone="danger"
+          hint="Live track condition"
+        />
+        <KpiCard
+          label="Maintenance Due"
+          value={maintenanceDue}
+          icon={CalendarClock}
+          tone="warn"
+          hint="Overdue tasks"
+        />
+        <KpiCard
+          label="Active Blocks"
+          value={live.kpi.active_blocks}
+          icon={Wrench}
+          hint="Current maintenance blocks"
+        />
       </div>
 
       {/* Track Map */}
@@ -50,7 +88,8 @@ function TMSDashboard() {
             <MapPin className="size-16 text-muted-foreground mx-auto mb-4" />
             <p className="text-sm text-muted-foreground mb-2">Interactive Track Map</p>
             <p className="text-xs text-muted-foreground">
-              Track Sections · Kilometer Markers · Track Condition · Defects · Maintenance Zones · Work Teams
+              Track Sections · Kilometer Markers · Track Condition · Defects · Maintenance Zones ·
+              Work Teams
             </p>
           </div>
         </div>
@@ -66,47 +105,45 @@ function TMSDashboard() {
                 <th className="text-left p-3 font-semibold text-muted-foreground">Section</th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">KM</th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Condition</th>
-                <th className="text-left p-3 font-semibold text-muted-foreground">Last Inspection</th>
-                <th className="text-left p-3 font-semibold text-muted-foreground">Next Inspection</th>
+                <th className="text-left p-3 font-semibold text-muted-foreground">
+                  Last Inspection
+                </th>
+                <th className="text-left p-3 font-semibold text-muted-foreground">
+                  Next Inspection
+                </th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Risk</th>
                 <th className="text-left p-3 font-semibold text-muted-foreground">Status</th>
               </tr>
             </thead>
             <tbody>
-              {SECTIONS.map((section) => (
-                <tr key={section.id} className="border-b border-border hover:bg-panel-muted">
-                  <td className="p-3 font-mono font-semibold">{section.id}</td>
-                  <td className="p-3">{section.name}</td>
-                  <td className="p-3 font-mono">{section.distanceKm} km</td>
+              {live.tracks.map((track) => (
+                <tr key={track.id} className="border-b border-border hover:bg-panel-muted">
+                  <td className="p-3 font-mono font-semibold">{track.id}</td>
+                  <td className="p-3">{track.section} corridor</td>
+                  <td className="p-3 font-mono">{track.health}% health</td>
                   <td className="p-3">
                     <span
                       className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                        section.maintenanceStatus === "Overdue"
+                        track.condition === "Critical"
                           ? "bg-destructive/10 text-destructive"
-                          : section.maintenanceStatus === "Pending"
-                          ? "bg-warn/10 text-warn-foreground"
-                          : "bg-emerald-500/10 text-emerald-500"
+                          : track.condition === "Warning"
+                            ? "bg-warn/10 text-warn-foreground"
+                            : "bg-emerald-500/10 text-emerald-500"
                       }`}
                     >
-                      {section.maintenanceStatus}
+                      {track.condition}
                     </span>
                   </td>
                   <td className="p-3 text-muted-foreground">2026-09-15</td>
                   <td className="p-3 text-muted-foreground">2026-09-22</td>
                   <td className="p-3">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                        section.maintenanceStatus === "Overdue"
-                          ? "bg-destructive/10 text-destructive"
-                          : "bg-emerald-500/10 text-emerald-500"
-                      }`}
-                    >
-                      {section.maintenanceStatus === "Overdue" ? "High" : "Low"}
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500">
+                      {track.health < 90 ? "High" : "Low"}
                     </span>
                   </td>
                   <td className="p-3">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500">
-                      {section.operationalStatus}
+                      {track.occupancy}
                     </span>
                   </td>
                 </tr>
@@ -144,8 +181,8 @@ function TMSDashboard() {
                         task.criticality === "Critical"
                           ? "bg-destructive/10 text-destructive"
                           : task.criticality === "High"
-                          ? "bg-warn/10 text-warn-foreground"
-                          : "bg-emerald-500/10 text-emerald-500"
+                            ? "bg-warn/10 text-warn-foreground"
+                            : "bg-emerald-500/10 text-emerald-500"
                       }`}
                     >
                       {task.criticality}
@@ -153,7 +190,9 @@ function TMSDashboard() {
                   </td>
                   <td className="p-3 text-muted-foreground">2026-09-18</td>
                   <td className="p-3">{task.requiredResources[0] || "Unassigned"}</td>
-                  <td className="p-3 text-muted-foreground">{task.overdueDays > 0 ? `${task.overdueDays}d overdue` : "On schedule"}</td>
+                  <td className="p-3 text-muted-foreground">
+                    {task.overdueDays > 0 ? `${task.overdueDays}d overdue` : "On schedule"}
+                  </td>
                   <td className="p-3">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-warn/10 text-warn-foreground">
                       {task.status}

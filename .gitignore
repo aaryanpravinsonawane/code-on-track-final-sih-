@@ -21,6 +21,9 @@ dist-ssr
 __pycache__/
 *.py[cod]
 
+# Supabase CLI local metadata
+.temp/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars

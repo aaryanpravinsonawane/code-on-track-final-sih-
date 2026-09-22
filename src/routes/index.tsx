@@ -34,6 +34,7 @@ import { DeptTag, Panel, PriorityTag } from "@/components/trackwise/shared";
 import { RESOURCES, SECTIONS, TASKS, TRAINS, WINDOWS, fmt } from "@/lib/trackwise/data";
 import { conflictingTrains, priorityBand, priorityScore } from "@/lib/trackwise/engine";
 import { useTrackwise } from "@/lib/trackwise/store";
+import { useLiveSimulation } from "@/lib/liveSimulation";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -57,6 +58,7 @@ export const Route = createFileRoute("/")({
 
 function Dashboard() {
   const { plan } = useTrackwise();
+  const live = useLiveSimulation();
   const [selectedStation, setSelectedStation] = useState<string | null>(null);
 
   const pending = TASKS.filter((t) => t.status === "Pending" || t.status === "Deferred");
@@ -77,9 +79,9 @@ function Dashboard() {
     TRD: TASKS.filter((t) => t.section === s.id && t.department === "TRD").length,
   }));
 
-  const byType = ["Superfast", "Express", "Passenger", "Suburban", "Freight"].map((k) => ({
+  const byType = ["Vande Bharat", "Express", "Freight"].map((k) => ({
     name: k,
-    value: TRAINS.filter((t) => t.type === k).length,
+    value: live.trains.filter((t) => t.category === k).length,
   }));
   const PIE = [
     "var(--color-primary)",
@@ -109,13 +111,13 @@ function Dashboard() {
         />
         <KpiCard
           label="Active Trains"
-          value={TRAINS.length}
+          value={live.trains.length}
           icon={TrainFront}
           hint="Scheduled on corridor today"
         />
         <KpiCard
           label="Delayed Trains"
-          value={2}
+          value={live.kpi.delayed_trains}
           icon={AlertTriangle}
           tone="warn"
           hint="Currently delayed >15 min"
@@ -150,7 +152,7 @@ function Dashboard() {
         />
         <KpiCard
           label="Active Maintenance Blocks"
-          value={plan?.metrics.blocksPlanned ?? 0}
+          value={live.kpi.active_blocks}
           icon={CalendarClock}
           hint={plan ? "From latest optimization" : "Run the planner"}
         />
@@ -198,24 +200,39 @@ function Dashboard() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="text-center p-3 bg-panel-muted rounded-lg">
-              <p className="text-2xl font-bold text-emerald-500">98%</p>
+              <p className="text-2xl font-bold text-emerald-500">{live.kpi.track_health}%</p>
               <p className="text-xs text-muted-foreground mt-1">Track</p>
             </div>
             <div className="text-center p-3 bg-panel-muted rounded-lg">
-              <p className="text-2xl font-bold text-emerald-500">96%</p>
+              <p className="text-2xl font-bold text-emerald-500">{live.kpi.signal_health}%</p>
               <p className="text-xs text-muted-foreground mt-1">Signal</p>
             </div>
             <div className="text-center p-3 bg-panel-muted rounded-lg">
-              <p className="text-2xl font-bold text-amber-500">94%</p>
+              <p className="text-2xl font-bold text-amber-500">
+                {Math.round(
+                  (live.trains.filter((train) => train.traction_status === "Healthy").length /
+                    live.trains.length) *
+                    100,
+                )}
+                %
+              </p>
               <p className="text-xs text-muted-foreground mt-1">Traction</p>
             </div>
             <div className="text-center p-3 bg-panel-muted rounded-lg">
-              <p className="text-2xl font-bold text-emerald-500">97%</p>
+              <p className="text-2xl font-bold text-emerald-500">
+                {live.kpi.operations_efficiency}%
+              </p>
               <p className="text-xs text-muted-foreground mt-1">Operations</p>
             </div>
           </div>
           <div className="text-center p-4 bg-primary/5 border border-primary/20 rounded-lg">
-            <p className="text-3xl font-bold text-primary">96%</p>
+            <p className="text-3xl font-bold text-primary">
+              {Math.round(
+                (live.kpi.track_health + live.kpi.signal_health + live.kpi.operations_efficiency) /
+                  3,
+              )}
+              %
+            </p>
             <p className="text-sm text-muted-foreground mt-1">Overall Operational Health</p>
           </div>
         </Panel>

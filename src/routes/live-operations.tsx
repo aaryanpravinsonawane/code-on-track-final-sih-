@@ -6,6 +6,7 @@ import { Panel } from "@/components/trackwise/shared";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { departmentHealth, platforms, tracks } from "@/lib/trackwise/operations";
 import { LiveOperationsFeed } from "@/components/realtime/LiveOperationsFeed";
+import { useLiveSimulation } from "@/lib/liveSimulation";
 
 export const Route = createFileRoute("/live-operations")({
   component: LiveOperations,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/live-operations")({
 
 function LiveOperations() {
   const [heartbeat, setHeartbeat] = useState(0);
+  const live = useLiveSimulation();
   useEffect(() => {
     const timer = window.setInterval(() => setHeartbeat((value) => value + 1), 3000);
     return () => window.clearInterval(timer);
@@ -24,11 +26,16 @@ function LiveOperations() {
       subtitle={`NDG Integrated Control Room · simulation heartbeat ${heartbeat + 1}`}
     >
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <KpiCard label="Running Trains" value={18} icon={TrainFront} tone="success" />
-        <KpiCard label="Delayed Trains" value={4} icon={Clock} tone="warn" />
+        <KpiCard
+          label="Running Trains"
+          value={live.kpi.running_trains}
+          icon={TrainFront}
+          tone="success"
+        />
+        <KpiCard label="Delayed Trains" value={live.kpi.delayed_trains} icon={Clock} tone="warn" />
         <KpiCard
           label="Track Occupancy"
-          value={tracks.filter((track) => track.occupancy !== "Free").length}
+          value={live.tracks.filter((track) => track.occupancy !== "Free").length}
           icon={Activity}
         />
         <KpiCard label="Active Incidents" value={7} icon={AlertTriangle} tone="danger" />
@@ -47,19 +54,19 @@ function LiveOperations() {
                 </tr>
               </thead>
               <tbody>
-                {platforms.map((platform) => (
-                  <tr key={platform.id} className="border-b border-border/70 hover:bg-accent/50">
-                    <td className="px-3 py-3 font-mono font-semibold">
-                      {platform.train === "-" ? "64022" : platform.train.split(" ")[0]}
-                    </td>
+                {live.trains.slice(0, 6).map((train, index) => (
+                  <tr key={train.number} className="border-b border-border/70 hover:bg-accent/50">
+                    <td className="px-3 py-3 font-mono font-semibold">{train.number}</td>
                     <td className="px-3 py-3">
-                      {platform.train === "-" ? "Approaching NDG" : "At station"}
+                      {train.status} · KM {train.position_km}
                     </td>
-                    <td className="px-3 py-3">{platform.id}</td>
+                    <td className="px-3 py-3">P-{index + 1}</td>
                     <td
-                      className={`px-3 py-3 ${platform.delay ? "text-amber-500" : "text-emerald-500"}`}
+                      className={`px-3 py-3 ${train.delay_minutes ? "text-amber-500" : "text-emerald-500"}`}
                     >
-                      {platform.delay ? `+${platform.delay} min` : "On time"}
+                      {train.delay_minutes
+                        ? `+${train.delay_minutes} min · pred ${train.delay_prediction_minutes}`
+                        : "On time"}
                     </td>
                     <td className="px-3 py-3 text-emerald-500">Running</td>
                   </tr>
@@ -70,7 +77,19 @@ function LiveOperations() {
         </Panel>
         <Panel title="DEPARTMENT HEALTH">
           <div className="space-y-3">
-            {departmentHealth.map((department) => (
+            {[
+              { name: "Signals", health: live.kpi.signal_health, status: "Telemetry" },
+              { name: "Tracks", health: live.kpi.track_health, status: "Telemetry" },
+              {
+                name: "Traction",
+                health: Math.round(
+                  (live.trains.filter((train) => train.traction_status === "Healthy").length /
+                    live.trains.length) *
+                    100,
+                ),
+                status: "Telemetry",
+              },
+            ].map((department) => (
               <div
                 key={department.name}
                 className="rounded-md border border-border bg-panel-muted p-3"
@@ -99,15 +118,25 @@ function LiveOperations() {
           <div className="space-y-3 text-sm">
             <div className="flex gap-2">
               <AlertTriangle className="size-4 text-destructive" />
-              <span>Signal S4 failure at North Cabin</span>
+              <span>
+                {live.signals.find((signal) => signal.status === "Red")?.alert ??
+                  "All signals reporting clear"}
+              </span>
             </div>
             <div className="flex gap-2">
               <Clock className="size-4 text-amber-500" />
-              <span>Train 12615 running 18 minutes late</span>
+              <span>
+                {live.trains.find((train) => train.delay_minutes > 10)?.name ??
+                  "All trains within delay threshold"}
+              </span>
             </div>
             <div className="flex gap-2">
               <Zap className="size-4 text-amber-500" />
-              <span>Feeder FEED-03 tripped</span>
+              <span>
+                {live.trains.some((train) => train.traction_status === "Attention")
+                  ? "Traction attention detected"
+                  : "Traction telemetry nominal"}
+              </span>
             </div>
           </div>
         </Panel>
@@ -115,15 +144,22 @@ function LiveOperations() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Signals</span>
-              <b className="text-emerald-500">96%</b>
+              <b className="text-emerald-500">{live.kpi.signal_health}%</b>
             </div>
             <div className="flex justify-between">
               <span>OHE</span>
-              <b className="text-amber-500">94%</b>
+              <b className="text-amber-500">
+                {Math.round(
+                  (live.trains.filter((train) => train.traction_status === "Healthy").length /
+                    live.trains.length) *
+                    100,
+                )}
+                %
+              </b>
             </div>
             <div className="flex justify-between">
               <span>Operations</span>
-              <b className="text-emerald-500">98%</b>
+              <b className="text-emerald-500">{live.kpi.operations_efficiency}%</b>
             </div>
           </div>
         </Panel>
