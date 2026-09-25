@@ -10,12 +10,15 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiBlockOptimizerRouteImport } from './routes/ai-block-optimizer'
 import { Route as AiPriorityRouteImport } from './routes/ai-priority'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as CoaRouteImport } from './routes/coa'
 import { Route as ComparisonRouteImport } from './routes/comparison'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DrmRouteImport } from './routes/drm'
 import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as LiveOperationsRouteImport } from './routes/live-operations'
 import { Route as LoginRouteImport } from './routes/login'
@@ -40,6 +43,11 @@ import { Route as WorkstationLocationRouteImport } from './routes/workstation-lo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiBlockOptimizerRoute = AiBlockOptimizerRouteImport.update({
+  id: '/ai-block-optimizer',
+  path: '/ai-block-optimizer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiPriorityRoute = AiPriorityRouteImport.update({
@@ -70,6 +78,16 @@ const CoaRoute = CoaRouteImport.update({
 const ComparisonRoute = ComparisonRouteImport.update({
   id: '/comparison',
   path: '/comparison',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrmRoute = DrmRouteImport.update({
+  id: '/drm',
+  path: '/drm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IncidentsRoute = IncidentsRouteImport.update({
@@ -175,12 +193,15 @@ const WorkstationLocationRoute = WorkstationLocationRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-block-optimizer': typeof AiBlockOptimizerRoute
   '/ai-priority': typeof AiPriorityRoute
   '/alerts': typeof AlertsRoute
   '/analytics': typeof AnalyticsRoute
   '/audit': typeof AuditRoute
   '/coa': typeof CoaRoute
   '/comparison': typeof ComparisonRoute
+  '/dashboard': typeof DashboardRoute
+  '/drm': typeof DrmRoute
   '/incidents': typeof IncidentsRoute
   '/live-operations': typeof LiveOperationsRoute
   '/login': typeof LoginRoute
@@ -204,12 +225,15 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-block-optimizer': typeof AiBlockOptimizerRoute
   '/ai-priority': typeof AiPriorityRoute
   '/alerts': typeof AlertsRoute
   '/analytics': typeof AnalyticsRoute
   '/audit': typeof AuditRoute
   '/coa': typeof CoaRoute
   '/comparison': typeof ComparisonRoute
+  '/dashboard': typeof DashboardRoute
+  '/drm': typeof DrmRoute
   '/incidents': typeof IncidentsRoute
   '/live-operations': typeof LiveOperationsRoute
   '/login': typeof LoginRoute
@@ -234,12 +258,15 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-block-optimizer': typeof AiBlockOptimizerRoute
   '/ai-priority': typeof AiPriorityRoute
   '/alerts': typeof AlertsRoute
   '/analytics': typeof AnalyticsRoute
   '/audit': typeof AuditRoute
   '/coa': typeof CoaRoute
   '/comparison': typeof ComparisonRoute
+  '/dashboard': typeof DashboardRoute
+  '/drm': typeof DrmRoute
   '/incidents': typeof IncidentsRoute
   '/live-operations': typeof LiveOperationsRoute
   '/login': typeof LoginRoute
@@ -265,12 +292,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-block-optimizer'
     | '/ai-priority'
     | '/alerts'
     | '/analytics'
     | '/audit'
     | '/coa'
     | '/comparison'
+    | '/dashboard'
+    | '/drm'
     | '/incidents'
     | '/live-operations'
     | '/login'
@@ -294,12 +324,15 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-block-optimizer'
     | '/ai-priority'
     | '/alerts'
     | '/analytics'
     | '/audit'
     | '/coa'
     | '/comparison'
+    | '/dashboard'
+    | '/drm'
     | '/incidents'
     | '/live-operations'
     | '/login'
@@ -323,12 +356,15 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-block-optimizer'
     | '/ai-priority'
     | '/alerts'
     | '/analytics'
     | '/audit'
     | '/coa'
     | '/comparison'
+    | '/dashboard'
+    | '/drm'
     | '/incidents'
     | '/live-operations'
     | '/login'
@@ -353,12 +389,15 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiBlockOptimizerRoute: typeof AiBlockOptimizerRoute
   AiPriorityRoute: typeof AiPriorityRoute
   AlertsRoute: typeof AlertsRoute
   AnalyticsRoute: typeof AnalyticsRoute
   AuditRoute: typeof AuditRoute
   CoaRoute: typeof CoaRoute
   ComparisonRoute: typeof ComparisonRoute
+  DashboardRoute: typeof DashboardRoute
+  DrmRoute: typeof DrmRoute
   IncidentsRoute: typeof IncidentsRoute
   LiveOperationsRoute: typeof LiveOperationsRoute
   LoginRoute: typeof LoginRoute
@@ -388,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-block-optimizer': {
+      id: '/ai-block-optimizer'
+      path: '/ai-block-optimizer'
+      fullPath: '/ai-block-optimizer'
+      preLoaderRoute: typeof AiBlockOptimizerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai-priority': {
@@ -430,6 +476,20 @@ declare module '@tanstack/react-router' {
       path: '/comparison'
       fullPath: '/comparison'
       preLoaderRoute: typeof ComparisonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drm': {
+      id: '/drm'
+      path: '/drm'
+      fullPath: '/drm'
+      preLoaderRoute: typeof DrmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/incidents': {
@@ -577,12 +637,15 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiBlockOptimizerRoute: AiBlockOptimizerRoute,
   AiPriorityRoute: AiPriorityRoute,
   AlertsRoute: AlertsRoute,
   AnalyticsRoute: AnalyticsRoute,
   AuditRoute: AuditRoute,
   CoaRoute: CoaRoute,
   ComparisonRoute: ComparisonRoute,
+  DashboardRoute: DashboardRoute,
+  DrmRoute: DrmRoute,
   IncidentsRoute: IncidentsRoute,
   LiveOperationsRoute: LiveOperationsRoute,
   LoginRoute: LoginRoute,

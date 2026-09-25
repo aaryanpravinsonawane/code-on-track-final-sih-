@@ -4,7 +4,7 @@ export interface User {
   id: string;
   employeeId: string;
   name: string;
-  role: "Management" | "Station Master" | "Engineering" | "S&T" | "TRD" | "Control Office";
+  role: Role;
   department: string;
   station: string;
   division: string;
@@ -24,13 +24,13 @@ export interface LoginCredentials {
 const MOCK_USERS: User[] = [
   {
     id: "USR-001",
-    employeeId: "RM-001",
+    employeeId: "ADM-001",
     name: "Rajesh Kumar",
-    role: "Management",
-    department: "Operations",
+    role: "Admin",
+    department: "System Administration",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_all", "approve_plans", "manage_users", "view_analytics"],
+    permissions: ["view_all", "approve_plans", "manage_users", "view_analytics", "manage_integrations"],
   },
   {
     id: "USR-002",
@@ -40,47 +40,67 @@ const MOCK_USERS: User[] = [
     department: "Operations",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_station", "approve_station_plans", "manage_maintenance", "view_analytics"],
+    permissions: ["view_station", "approve_station_plans", "manage_maintenance", "view_analytics", "report_incidents"],
   },
   {
     id: "USR-003",
-    employeeId: "ENG-001",
+    employeeId: "TMS-001",
     name: "Amit Patel",
-    role: "Engineering",
-    department: "Engineering",
+    role: "TMS Officer",
+    department: "Track Management",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_tms", "manage_track_maintenance", "create_work_orders"],
+    permissions: ["view_tms", "manage_track_maintenance", "create_work_orders", "view_ai"],
   },
   {
     id: "USR-004",
-    employeeId: "SNT-001",
+    employeeId: "SMMS-001",
     name: "Suresh Reddy",
-    role: "S&T",
-    department: "S&T",
+    role: "SMMS Officer",
+    department: "Signal & Telecommunication",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_smms", "manage_signal_maintenance", "create_work_orders"],
+    permissions: ["view_smms", "manage_signal_maintenance", "create_work_orders", "report_incidents"],
   },
   {
     id: "USR-005",
-    employeeId: "TRD-001",
+    employeeId: "TDMS-001",
     name: "Vijay Singh",
-    role: "TRD",
-    department: "TRD",
+    role: "TDMS Officer",
+    department: "Traction Distribution",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_tdms", "manage_traction_maintenance", "create_work_orders"],
+    permissions: ["view_tdms", "manage_traction_maintenance", "create_work_orders", "view_analytics"],
   },
   {
     id: "USR-006",
     employeeId: "COA-001",
     name: "Anita Desai",
-    role: "Control Office",
+    role: "COA Controller",
     department: "Operations",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_coa", "manage_train_movement", "create_caution_orders"],
+    permissions: ["view_coa", "manage_train_movement", "create_caution_orders", "view_ai", "view_analytics"],
+  },
+  {
+    id: "USR-007",
+    employeeId: "DRM-001",
+    name: "Meera Nair",
+    role: "DRM",
+    department: "Division Management",
+    station: "NDG",
+    division: "Central Division",
+    permissions: ["view_all", "approve_plans", "view_analytics"],
+  },
+  {
+    id: "USR-008",
+    employeeId: "MNT-001",
+    name: "Arjun Rao",
+    role: "Maintenance Engineer",
+    department: "Integrated Maintenance",
+    station: "NDG",
+    division: "Central Division",
+    permissions: ["view_tms", "view_smms", "view_tdms", "create_work_orders", "manage_maintenance", "view_ai"],
   },
 ];
 
@@ -113,9 +133,10 @@ export function canAccessModule(user: User | null, module: string): boolean {
     tdms: ["view_tdms", "view_all"],
     smms: ["view_smms", "view_all"],
     coa: ["view_coa", "view_all"],
-    ai: ["view_all"],
+    ai: ["view_ai", "view_all"],
     analytics: ["view_analytics", "view_all"],
     admin: ["manage_users", "view_all"],
+    maintenance: ["manage_maintenance", "view_all"],
   };
 
   const requiredPerms = modulePermissions[module] || [];

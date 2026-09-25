@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { TrackwiseProvider, useTrackwise } from "../lib/trackwise/store";
+import { canAccessModule } from "../lib/trackwise/auth";
+import { roleLandingPath } from "../lib/trackwise/store";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -148,14 +150,37 @@ function RootComponent() {
 function AuthGuard({ children }: { children: ReactNode }) {
   const { user } = useTrackwise();
   const router = useRouter();
+  const pathname = router.state.location.pathname;
+  const requiredModule =
+    pathname === "/" || pathname === "/dashboard"
+      ? "management"
+      : pathname.startsWith("/station") || pathname.startsWith("/platform") || pathname.startsWith("/track-occupancy") || pathname.startsWith("/signal-status") || pathname.startsWith("/traction-status") || pathname.startsWith("/workstation") || pathname === "/live-operations"
+        ? "station_master"
+        : pathname.startsWith("/tms")
+          ? "tms"
+          : pathname.startsWith("/smms")
+            ? "smms"
+            : pathname.startsWith("/tdms")
+              ? "tdms"
+              : pathname.startsWith("/coa")
+                ? "coa"
+                : pathname.startsWith("/ai") || pathname === "/planner" || pathname === "/simulator"
+                  ? "ai"
+                  : pathname === "/maintenance" || pathname === "/work-orders"
+                    ? "maintenance"
+                    : pathname === "/analytics" || pathname === "/reports" || pathname === "/comparison" || pathname === "/audit" || pathname === "/timeline"
+                      ? "analytics"
+                      : undefined;
 
   useEffect(() => {
-    if (!user && router.state.location.pathname !== "/login") {
+    if (!user && pathname !== "/login") {
       router.navigate({ to: "/login" });
+    } else if (user && pathname !== "/login" && requiredModule && !canAccessModule(user, requiredModule)) {
+      router.navigate({ to: roleLandingPath(user.role) as "/" });
     }
-  }, [user, router]);
+  }, [user, router, pathname, requiredModule]);
 
-  if (!user && router.state.location.pathname !== "/login") {
+  if (!user && pathname !== "/login") {
     return null;
   }
 

@@ -79,7 +79,10 @@ const NAVIGATION: NavSection[] = [
   },
   {
     title: "OPERATIONS",
-    items: [{ to: "/coa", label: "COA", icon: TrainFront, module: "coa" }],
+    items: [
+      { to: "/coa", label: "COA Control Office", icon: TrainFront, module: "coa" },
+      { to: "/ai-block-optimizer", label: "AI Block Optimizer", icon: Sparkles, module: "ai" },
+    ],
   },
   {
     title: "ENGINEERING",
@@ -87,8 +90,8 @@ const NAVIGATION: NavSection[] = [
       { to: "/tms", label: "TMS", icon: Wrench, module: "tms" },
       { to: "/tdms", label: "TDMS", icon: Gauge, module: "tdms" },
       { to: "/smms", label: "SMMS", icon: ShieldCheck, module: "smms" },
-      { to: "/work-orders", label: "Work Orders", icon: ClipboardList, module: "engineering" },
-      { to: "/maintenance", label: "Maintenance", icon: CalendarClock, module: "engineering" },
+      { to: "/work-orders", label: "Work Orders", icon: ClipboardList, module: "maintenance" },
+      { to: "/maintenance", label: "Maintenance Planning", icon: CalendarClock, module: "maintenance" },
     ],
   },
   {
@@ -130,6 +133,7 @@ const NAVIGATION: NavSection[] = [
     items: [
       { to: "/ai-priority", label: "AI Priority Engine", icon: Sparkles, module: "ai" },
       { to: "/simulator", label: "What-If Simulation", icon: Activity, module: "ai" },
+      { to: "/ai-block-optimizer", label: "AI Block Optimizer", icon: Sparkles, module: "ai" },
     ],
   },
 ];
@@ -146,7 +150,7 @@ export function MainShell({
   const { user, setUser } = useTrackwise();
   const navigate = useNavigate();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(["COMMAND CENTER", "ENGINEERING"]),
+    new Set(["COMMAND CENTER", "OPERATIONS", "ENGINEERING", "AI"]),
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 

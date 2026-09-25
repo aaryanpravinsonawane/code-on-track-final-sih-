@@ -143,12 +143,28 @@ export function useTrackwise() {
 }
 
 export const ROLES: Role[] = [
-  "Management",
+  "Admin",
   "Station Master",
-  "Engineering",
-  "S&T",
-  "TRD",
-  "Control Office",
+  "TMS Officer",
+  "SMMS Officer",
+  "TDMS Officer",
+  "COA Controller",
+  "DRM",
+  "Maintenance Engineer",
 ];
 
-export const canApprove = (role: Role) => role === "Management" || role === "Station Master";
+export const canApprove = (role: Role) => role === "Admin" || role === "DRM" || role === "Station Master";
+
+export const roleLandingPath = (role: Role) => {
+  const paths: Record<Role, string> = {
+    Admin: "/dashboard",
+    "Station Master": "/station-master",
+    "TMS Officer": "/tms",
+    "SMMS Officer": "/smms",
+    "TDMS Officer": "/tdms",
+    "COA Controller": "/coa",
+    DRM: "/drm",
+    "Maintenance Engineer": "/maintenance",
+  };
+  return paths[role];
+};

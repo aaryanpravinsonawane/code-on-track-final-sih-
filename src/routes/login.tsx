@@ -1,7 +1,8 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { TrainFront, ShieldCheck, Clock, AlertCircle, HelpCircle, Lock } from "lucide-react";
 import { authenticate, type LoginCredentials } from "@/lib/trackwise/auth";
+import { ROLES, roleLandingPath, useTrackwise } from "@/lib/trackwise/store";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { setUser } = useTrackwise();
   const [credentials, setCredentials] = useState<LoginCredentials>({
     employeeId: "",
     password: "",
@@ -23,6 +25,7 @@ function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.info("[TRACKWISE AUTH] Login clicked", { role: credentials.role });
     setIsLoading(true);
     setError("");
 
@@ -30,18 +33,32 @@ function LoginPage() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const user = authenticate(credentials);
+    console.info("[TRACKWISE AUTH] Authentication result", {
+      success: Boolean(user),
+      role: user?.role,
+    });
     if (user) {
-      // Store user in session storage (in real app, use secure cookies/JWT)
       sessionStorage.setItem("trackwise_user", JSON.stringify(user));
-      navigate({ to: "/" });
+      setUser(user);
+      const target = roleLandingPath(user.role);
+      console.info("[TRACKWISE AUTH] Session stored; navigating", { target });
+      try {
+        await navigate({ to: target as "/" });
+        console.info("[TRACKWISE AUTH] Navigation completed", { target });
+      } catch (navigationError) {
+        console.error("[TRACKWISE AUTH] Navigation failed", navigationError);
+        setError("Login succeeded, but the destination could not be opened.");
+        setIsLoading(false);
+      }
     } else {
+      console.warn("[TRACKWISE AUTH] Authentication rejected", { role: credentials.role });
       setError("Authentication failed. Please check your credentials.");
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Brand Header */}
         <div className="text-center mb-8">
@@ -135,6 +152,19 @@ function LoginPage() {
                   <option value="Eastern Division">Eastern Division</option>
                 </select>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                Operational Role
+              </label>
+              <select
+                value={credentials.role}
+                onChange={(e) => setCredentials({ ...credentials, role: e.target.value as LoginCredentials["role"] })}
+                className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+              >
+                {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
+              </select>
             </div>
 
             <div className="flex items-center gap-2">
