@@ -3,6 +3,7 @@ from app.ai.delay_predictor import predict_delay
 from app.ai.platform_allocator import allocate_platforms
 from app.ai.schedule_optimizer import optimize_schedule
 from app.ai.track_allocator import allocate_tracks
+from app.ai.maintenance_block_optimizer import optimize_maintenance_blocks
 
 
 TRAINS = [
@@ -33,3 +34,57 @@ def test_schedule_and_prediction_return_operational_metrics():
     assert len(schedule["assignments"]) == len(TRAINS)
     assert 0 <= prediction["delay_probability"] <= 100
     assert prediction["risk_level"] in {"Low", "Medium", "High"}
+
+
+def test_maintenance_optimizer_protects_train_paths_and_reports_solver_status():
+    result = optimize_maintenance_blocks(
+        {
+            "requests": [
+                {
+                    "id": "BLK-1",
+                    "section": "S1",
+                    "track": "UP-MAIN",
+                    "window_start": 600,
+                    "window_end": 780,
+                    "duration_minutes": 60,
+                    "department": "Engineering",
+                    "resources": ["Tamping Machine"],
+                    "priority": 5,
+                    "urgency": 9,
+                    "bundle_key": "S1-UP-MAIN",
+                },
+                {
+                    "id": "BLK-2",
+                    "section": "S1",
+                    "track": "UP-MAIN",
+                    "window_start": 600,
+                    "window_end": 780,
+                    "duration_minutes": 60,
+                    "department": "S&T",
+                    "resources": ["Signal Crew 1"],
+                    "priority": 4,
+                    "urgency": 8,
+                    "bundle_key": "S1-UP-MAIN",
+                },
+            ],
+            "trains": [
+                {
+                    "id": "EXP-1",
+                    "section": "S1",
+                    "start": 620,
+                    "end": 680,
+                    "priority": 1,
+                }
+            ],
+            "safety_buffer_minutes": 10,
+            "slot_minutes": 15,
+            "time_limit_seconds": 2,
+        }
+    )
+
+    assert result["solver_mode"] == "ortools-cp-sat"
+    assert result["solver_status"] in {"OPTIMAL", "FEASIBLE"}
+    assert len(result["schedule"]) == 2
+    assert all(item["start"] >= 690 for item in result["schedule"])
+    assert len({item["bundle_id"] for item in result["schedule"]}) == 1
+    assert result["metrics"]["train_conflicts_avoided"] >= 1

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MainShell } from "@/components/trackwise/MainShell";
+import { BlockWorkflowTable } from "@/components/trackwise/BlockWorkflowTable";
 import { StationOperationsPage } from "@/components/trackwise/StationOperations";
 import {
   RailwayKpiGrid,
@@ -25,6 +26,7 @@ function StationMasterDashboard() {
         <TrainScheduleGantt />
       </div>
       <StationOperationsPage mode="master" />
+      <div className="mt-4"><BlockWorkflowTable /></div>
     </MainShell>
   );
 }

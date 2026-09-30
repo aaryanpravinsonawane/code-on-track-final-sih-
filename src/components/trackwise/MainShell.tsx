@@ -147,7 +147,7 @@ export function MainShell({
   subtitle?: string;
   children: ReactNode;
 }) {
-  const { user, setUser } = useTrackwise();
+  const { user, setUser, demoMode } = useTrackwise();
   const navigate = useNavigate();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(["COMMAND CENTER", "OPERATIONS", "ENGINEERING", "AI"]),
@@ -168,6 +168,7 @@ export function MainShell({
 
   const handleLogout = () => {
     sessionStorage.removeItem("trackwise_user");
+    localStorage.removeItem("trackwise_access_token");
     setUser(null);
     navigate({ to: "/login" });
   };
@@ -204,9 +205,9 @@ export function MainShell({
               </p>
             </div>
           </div>
-          <div className="mt-5 flex items-center gap-2 rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-[10px] font-semibold tracking-[0.12em] text-emerald-200">
-            <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
-            NETWORK SYNCHRONIZED
+          <div className={`mt-5 flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] font-semibold tracking-[0.12em] ${demoMode ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"}`}>
+            <span className={`size-1.5 rounded-full ${demoMode ? "bg-amber-400" : "animate-pulse bg-emerald-400"}`} />
+            {demoMode ? "SIMULATED DEMONSTRATION DATA" : "WORKFLOW API CONNECTED"}
           </div>
         </div>
 

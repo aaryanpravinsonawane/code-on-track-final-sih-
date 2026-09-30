@@ -12,6 +12,7 @@ from app.routes.auth import router as auth_router
 from app.routes.data_analytics import router as data_analytics_router
 from app.routes.optimizer import router as optimizer_router
 from app.routes.simulation import router as simulation_router
+from app.routes.workflow import router as workflow_router
 
 configure_logging()
 settings = get_settings()
@@ -24,6 +25,7 @@ app.include_router(auth_router, prefix=settings.api_prefix)
 app.include_router(optimizer_router, prefix=settings.api_prefix)
 app.include_router(data_analytics_router, prefix=settings.api_prefix)
 app.include_router(simulation_router, prefix=settings.api_prefix)
+app.include_router(workflow_router, prefix=settings.api_prefix)
 
 @app.get("/api/health", tags=["health"])
 def health():

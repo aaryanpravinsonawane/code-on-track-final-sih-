@@ -15,13 +15,14 @@ import {
 import { MainShell } from "@/components/trackwise/MainShell";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { Panel } from "@/components/trackwise/shared";
+import { IssueResolutionCenter } from "@/components/trackwise/IssueResolutionCenter";
 import { AIPriorityEngine, type AIPriorityItem } from "@/lib/trackwise/ai-priority";
 
 export const Route = createFileRoute("/ai-priority")({
-  component: AIPriorityQueue,
+  component: IssueResolutionCenter,
 });
 
-function AIPriorityQueue() {
+export function AIPriorityQueue() {
   const [filter, setFilter] = useState("All");
   const [selectedItem, setSelectedItem] = useState<AIPriorityItem | null>(null);
 

@@ -20,6 +20,11 @@ def get_session_factory():
     return _session_factory
 
 
+def get_engine():
+    get_session_factory()
+    return _engine
+
+
 def get_db() -> Generator[Session, None, None]:
     factory = get_session_factory()
     if factory is None:

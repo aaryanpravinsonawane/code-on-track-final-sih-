@@ -5,4 +5,6 @@ export { issueService } from "./issueService";
 export { optimizerService } from "./optimizerService";
 export { schedulingService } from "./schedulingService";
 export { trainService } from "./trainService";
+export { workflowApiConfigured, workflowService } from "./workflowService";
+export type { BlockDemandInput, FieldReportInput, FieldReportResponse } from "./workflowService";
 export type * from "./types";

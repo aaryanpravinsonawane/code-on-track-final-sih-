@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { MainShell } from "@/components/trackwise/MainShell";
+import { FieldReporter } from "@/components/trackwise/FieldReporter";
 import { DeptTag, Panel, PriorityTag, StatusTag } from "@/components/trackwise/shared";
 import { SECTIONS, TASKS } from "@/lib/trackwise/data";
 import { priorityBand, priorityScore } from "@/lib/trackwise/engine";
@@ -54,6 +55,7 @@ function MaintenancePage() {
       title="MAINTENANCE REGISTER"
       subtitle="30 simulated maintenance requests raised by Engineering, S&T and TRD"
     >
+      <FieldReporter />
       <Panel
         title={`Tasks (${rows.length})`}
         right={
@@ -84,7 +86,7 @@ function MaintenancePage() {
         }
       >
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-sm">
+          <table className="w-full min-w-225 text-sm">
             <thead>
               <tr className="border-b border-border text-left text-[11px] tracking-[0.08em] uppercase text-muted-foreground">
                 <th className="py-2 pr-3">Task ID</th>

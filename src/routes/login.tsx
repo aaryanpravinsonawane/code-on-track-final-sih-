@@ -3,6 +3,7 @@ import { useState } from "react";
 import { TrainFront, ShieldCheck, Clock, AlertCircle, HelpCircle, Lock } from "lucide-react";
 import { authenticate, type LoginCredentials } from "@/lib/trackwise/auth";
 import { ROLES, roleLandingPath, useTrackwise } from "@/lib/trackwise/store";
+import { workflowApiConfigured, workflowService } from "@/services/api/workflowService";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -29,8 +30,18 @@ function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    // Simulate authentication delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (workflowApiConfigured) {
+      try {
+        const token = await workflowService.login(credentials.employeeId, credentials.password, credentials.role);
+        localStorage.setItem("trackwise_access_token", token.access_token);
+      } catch (authError) {
+        setError(authError instanceof Error ? authError.message : "Backend authentication failed.");
+        setIsLoading(false);
+        return;
+      }
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
 
     const user = authenticate(credentials);
     console.info("[TRACKWISE AUTH] Authentication result", {
@@ -51,6 +62,7 @@ function LoginPage() {
         setIsLoading(false);
       }
     } else {
+      localStorage.removeItem("trackwise_access_token");
       console.warn("[TRACKWISE AUTH] Authentication rejected", { role: credentials.role });
       setError("Authentication failed. Please check your credentials.");
       setIsLoading(false);
@@ -203,7 +215,9 @@ function LoginPage() {
             <button
               type="button"
               onClick={() =>
-                setSupportMessage("Demo support: use any non-empty Employee ID and password.")
+                setSupportMessage(workflowApiConfigured
+                  ? "Backend demo authentication is enabled; use the configured backend credentials."
+                  : "Offline demo: use any non-empty Employee ID and password.")
               }
               className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
             >

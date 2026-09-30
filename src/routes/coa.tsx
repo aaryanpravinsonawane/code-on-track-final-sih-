@@ -9,6 +9,7 @@ import {
   TrainFront,
 } from "lucide-react";
 import { MainShell } from "@/components/trackwise/MainShell";
+import { BlockWorkflowTable } from "@/components/trackwise/BlockWorkflowTable";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { Panel } from "@/components/trackwise/shared";
 import { useTrackwise } from "@/lib/trackwise/store";
@@ -198,6 +199,7 @@ function COADashboard() {
           </div>
         </div>
       </Panel>
+      <div className="mt-4"><BlockWorkflowTable /></div>
     </MainShell>
   );
 }

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Activity, BarChart3, ShieldCheck, TrainFront } from "lucide-react";
 import { MainShell } from "@/components/trackwise/MainShell";
+import { BlockWorkflowTable } from "@/components/trackwise/BlockWorkflowTable";
 import { KpiCard } from "@/components/trackwise/KpiCard";
 import { Panel } from "@/components/trackwise/shared";
 import { useLiveSimulation } from "@/lib/liveSimulation";
@@ -32,6 +33,7 @@ function DRMDashboard() {
           ))}
         </div>
       </Panel>
+      <div className="mt-4"><BlockWorkflowTable /></div>
     </MainShell>
   );
 }
