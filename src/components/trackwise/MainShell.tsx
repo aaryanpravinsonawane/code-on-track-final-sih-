@@ -29,6 +29,7 @@ import { useTrackwise } from "@/lib/trackwise/store";
 import { canAccessModule } from "@/lib/trackwise/auth";
 import { Button } from "@/components/ui/button";
 import { NotificationCenter } from "@/components/realtime/NotificationCenter";
+import { useClock } from "@/hooks/useClock";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -141,12 +142,16 @@ const NAVIGATION: NavSection[] = [
 export function MainShell({
   title,
   subtitle,
+  variant = "default",
   children,
 }: {
   title: string;
   subtitle?: string;
+  /** "command" applies the dark navy control-room theme (Command Center only). */
+  variant?: "default" | "command";
   children: ReactNode;
 }) {
+  const isCommand = variant === "command";
   const { user, setUser, demoMode } = useTrackwise();
   const navigate = useNavigate();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -173,14 +178,12 @@ export function MainShell({
     navigate({ to: "/login" });
   };
 
-  const currentTime = new Date().toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  const currentTime = useClock();
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
+    <div
+      className={`min-h-screen bg-background text-foreground flex ${isCommand ? "command-theme dark" : ""}`}
+    >
       {/* Left Sidebar */}
       <div
         className={`fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm transition-opacity lg:hidden ${sidebarOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
@@ -188,21 +191,19 @@ export function MainShell({
         aria-hidden="true"
       />
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-blue-950/70 bg-[#0f2d6b] text-blue-50 shadow-2xl transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-blue-950/70 bg-[#0a1b3f] text-blue-50 shadow-2xl transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Logo */}
         <div className="border-b border-blue-900/80 p-5">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-orange-500 text-white shadow-[0_0_24px_rgba(249,115,22,0.35)]">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-yellow-400 text-blue-950 shadow-[0_0_24px_rgba(250,204,21,0.3)]">
               <TrainFront className="size-5" />
             </div>
             <div>
               <p className="font-display text-lg font-bold tracking-[0.12em] text-white">
-                RAIL<span className="text-orange-300">WISE</span>
+                CODE<span className="text-yellow-300">ON</span>TRACK
               </p>
-              <p className="text-[9px] tracking-[0.14em] text-blue-200/70">
-                OPERATIONS CONTROL CENTER
-              </p>
+              <p className="text-[9px] tracking-[0.14em] text-blue-200/70">RAIL COMMAND CENTER</p>
             </div>
           </div>
           <div className={`mt-5 flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] font-semibold tracking-[0.12em] ${demoMode ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"}`}>
@@ -245,14 +246,14 @@ export function MainShell({
                           to={item.to}
                           className="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-blue-100/70 transition-all hover:bg-white/10 hover:text-white"
                           activeProps={{
-                            className: "bg-white/12 text-white shadow-[inset_3px_0_0_#fb923c]",
+                            className: "bg-white/12 text-white shadow-[inset_3px_0_0_#facc15]",
                           }}
                           onClick={() => setSidebarOpen(false)}
                         >
-                          <item.icon className="size-4 text-blue-200/60 transition-colors group-hover:text-orange-300" />
+                          <item.icon className="size-4 text-blue-200/60 transition-colors group-hover:text-yellow-300" />
                           <span className="flex-1">{item.label}</span>
                           {item.badge && (
-                            <span className="flex size-5 items-center justify-center rounded-full bg-orange-400 text-[10px] font-bold text-blue-950">
+                            <span className="flex size-5 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold text-blue-950">
                               {item.badge}
                             </span>
                           )}
@@ -269,7 +270,7 @@ export function MainShell({
         {/* User Info */}
         <div className="border-t border-blue-900/80 p-4">
           <div className="flex items-center gap-2 text-xs">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-800 text-orange-300">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-800 text-yellow-300">
               <User className="size-4" />
             </div>
             <div className="flex-1 min-w-0">
@@ -281,9 +282,9 @@ export function MainShell({
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 min-w-0 flex flex-col">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 border-b border-blue-950/80 bg-[#0f2d6b] shadow-xl backdrop-blur-xl">
+        <header className="sticky top-0 z-30 border-b border-blue-950/80 bg-[#0a1b3f] shadow-xl backdrop-blur-xl">
           <div className="flex items-center justify-between gap-3 px-4 py-3 text-white sm:px-6">
             {/* Left: Station & Division */}
             <div className="flex items-center gap-6">
@@ -370,9 +371,11 @@ export function MainShell({
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
           <div className="rail-grid mx-auto max-w-[1800px] px-4 py-5 sm:px-6 sm:py-7">
-            <div className="mb-6 border-b border-border/70 pb-5">
-              <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-rail-orange">
-                OPERATIONS / CONTROL VIEW
+            <div className={`border-b border-border/70 ${isCommand ? "mb-4 pb-3" : "mb-6 pb-5"}`}>
+              <p
+                className={`mb-2 text-[10px] font-bold tracking-[0.18em] ${isCommand ? "text-rail-yellow" : "text-rail-orange"}`}
+              >
+                {isCommand ? "CENTRAL RAILWAY · LIVE OPERATIONS" : "OPERATIONS / CONTROL VIEW"}
               </p>
               <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
                 {title}

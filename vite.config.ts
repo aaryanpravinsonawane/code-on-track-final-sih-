@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    // Bind to IPv4 so `npm run dev` also works on machines without IPv6 (default was "::").
+    // The dev server still defaults to http://localhost:8080.
+    server: { host: true },
+  },
 });

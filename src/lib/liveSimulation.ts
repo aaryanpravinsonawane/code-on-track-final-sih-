@@ -147,8 +147,10 @@ function localSnapshot(tick: number): LiveSnapshot {
   };
 }
 
-const apiBase = import.meta.env.VITE_API_URL ?? "";
+const apiBase = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "";
 const apiRoot = apiBase.endsWith("/api") ? apiBase : `${apiBase}/api`;
+/** Without VITE_API_URL there is no backend: use the built-in simulation and skip network calls. */
+const apiConfigured = apiBase.length > 0;
 
 async function readJson(endpoint: string) {
   const response = await fetch(`${apiRoot}/${endpoint}`);
@@ -162,6 +164,10 @@ export function useLiveSimulation() {
   useEffect(() => {
     let active = true;
     const updateFromApi = async () => {
+      if (!apiConfigured) {
+        if (active) setSnapshot(localSnapshot(++tick.current));
+        return;
+      }
       try {
         const [trains, signals, tracks, maintenance, kpi] = await Promise.all(
           ["trains", "signals", "tracks", "maintenance", "kpi"].map((endpoint) =>
@@ -184,22 +190,22 @@ export function useLiveSimulation() {
     };
     void updateFromApi();
     const interval = window.setInterval(() => void updateFromApi(), 5000);
-    const websocketUrl = apiBase
-      ? `${apiRoot.replace(/^http/, "ws")}/ws`
-      : `ws://${window.location.host}/api/ws`;
-    const socket = new WebSocket(websocketUrl);
-    socket.onmessage = (event) => {
-      try {
-        if (active) setSnapshot(JSON.parse(event.data) as LiveSnapshot);
-      } catch {
-        return;
-      }
-    };
-    socket.onerror = () => socket.close();
+    let socket: WebSocket | null = null;
+    if (apiConfigured) {
+      socket = new WebSocket(`${apiRoot.replace(/^http/, "ws")}/ws`);
+      socket.onmessage = (event) => {
+        try {
+          if (active) setSnapshot(JSON.parse(event.data) as LiveSnapshot);
+        } catch {
+          return;
+        }
+      };
+      socket.onerror = () => socket?.close();
+    }
     return () => {
       active = false;
       window.clearInterval(interval);
-      socket.close();
+      socket?.close();
     };
   }, []);
   return snapshot;

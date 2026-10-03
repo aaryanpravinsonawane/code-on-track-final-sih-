@@ -1,6 +1,7 @@
 export { default as api } from "./client";
 export { analyticsService } from "./analyticsService";
 export { dataAnalyticsService } from "./dataAnalyticsService";
+export type { AnalyticsSummary } from "./dataAnalyticsService";
 export { issueService } from "./issueService";
 export { optimizerService } from "./optimizerService";
 export { schedulingService } from "./schedulingService";

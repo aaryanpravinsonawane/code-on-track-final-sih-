@@ -148,13 +148,19 @@ function RootComponent() {
 }
 
 function AuthGuard({ children }: { children: ReactNode }) {
-  const { user } = useTrackwise();
+  const { user, authReady } = useTrackwise();
   const router = useRouter();
   const pathname = router.state.location.pathname;
   const requiredModule =
     pathname === "/" || pathname === "/dashboard"
       ? "management"
-      : pathname.startsWith("/station") || pathname.startsWith("/platform") || pathname.startsWith("/track-occupancy") || pathname.startsWith("/signal-status") || pathname.startsWith("/traction-status") || pathname.startsWith("/workstation") || pathname === "/live-operations"
+      : pathname.startsWith("/station") ||
+          pathname.startsWith("/platform") ||
+          pathname.startsWith("/track-occupancy") ||
+          pathname.startsWith("/signal-status") ||
+          pathname.startsWith("/traction-status") ||
+          pathname.startsWith("/workstation") ||
+          pathname === "/live-operations"
         ? "station_master"
         : pathname.startsWith("/tms")
           ? "tms"
@@ -168,19 +174,29 @@ function AuthGuard({ children }: { children: ReactNode }) {
                   ? "ai"
                   : pathname === "/maintenance" || pathname === "/work-orders"
                     ? "maintenance"
-                    : pathname === "/analytics" || pathname === "/reports" || pathname === "/comparison" || pathname === "/audit" || pathname === "/timeline"
+                    : pathname === "/analytics" ||
+                        pathname === "/reports" ||
+                        pathname === "/comparison" ||
+                        pathname === "/audit" ||
+                        pathname === "/timeline"
                       ? "analytics"
                       : undefined;
 
   useEffect(() => {
+    if (!authReady) return;
     if (!user && pathname !== "/login") {
       router.navigate({ to: "/login" });
-    } else if (user && pathname !== "/login" && requiredModule && !canAccessModule(user, requiredModule)) {
+    } else if (
+      user &&
+      pathname !== "/login" &&
+      requiredModule &&
+      !canAccessModule(user, requiredModule)
+    ) {
       router.navigate({ to: roleLandingPath(user.role) as "/" });
     }
-  }, [user, router, pathname, requiredModule]);
+  }, [authReady, user, router, pathname, requiredModule]);
 
-  if (!user && pathname !== "/login") {
+  if (!authReady || (!user && pathname !== "/login")) {
     return null;
   }
 

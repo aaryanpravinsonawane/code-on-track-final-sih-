@@ -17,6 +17,13 @@ function AIBlockOptimizer() {
   const { blockRequests, lastBlockOptimization, demoMode, runBlockOptimization } = useTrackwise();
   const [analyzing, setAnalyzing] = useState(false);
   const activeRequests = blockRequests.filter((request) => ["Submitted", "AI Validated"].includes(request.status) || request.replan_required);
+  const inputs = [
+    { label: "Block requests", value: `${blockRequests.length} requests · ${activeRequests.length} eligible`, icon: ShieldAlert },
+    { label: "Train paths", value: `${TRAINS.length} simulated train paths checked for overlap`, icon: TrainFront },
+    { label: "Resources", value: `${RESOURCES.length} listed machines and crews`, icon: RouteIcon },
+    { label: "Section and track windows", value: "Requested start/end windows per section and track", icon: MapPinned },
+    { label: "Safety constraints", value: "Conflicts are flagged, never auto-approved", icon: AlertTriangle },
+  ];
   const conflicts = lastBlockOptimization
     ? lastBlockOptimization.conflicts.train_paths.length + lastBlockOptimization.conflicts.resources.length + lastBlockOptimization.unscheduled.length
     : 0;

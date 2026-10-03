@@ -1,4 +1,13 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { getEngine } from "./engine";
 import { RESOURCES, TASKS, TRAINS, WINDOWS } from "./data";
 import type { AuditEntry, OptimizationResult, Role } from "./types";
@@ -19,12 +28,19 @@ import {
   type WorkflowAuditEvent,
   type WorkflowSnapshot,
 } from "./workflow";
-import { workflowApiConfigured, workflowService, type BlockDemandInput, type FieldReportInput } from "@/services/api/workflowService";
+import {
+  workflowApiConfigured,
+  workflowService,
+  type BlockDemandInput,
+  type FieldReportInput,
+} from "@/services/api/workflowService";
 
 export type PlanStatus = "none" | "draft" | "approved" | "rejected" | "modified";
 
 interface TrackwiseState {
   user: User | null;
+  /** false until the saved session has been read in the browser (keeps server and client markup identical). */
+  authReady: boolean;
   setUser: (u: User | null) => void;
   role: Role;
   setRole: (r: Role) => void;
@@ -45,9 +61,22 @@ interface TrackwiseState {
   log: (action: string, detail: string) => void;
   refreshWorkflow: () => Promise<void>;
   createBlockDemand: (input: BlockDemandInput) => Promise<BlockDemand>;
-  transitionBlock: (id: string, action: BlockAction, options?: { note?: string; trimmed_duration_minutes?: number }) => Promise<BlockDemand>;
-  updateWorkflowIssue: (id: string, changes: { status?: ResolutionIssue["status"]; assigned_department?: string }) => Promise<void>;
-  submitFieldReport: (input: FieldReportInput) => Promise<{ report: FieldReport; issue: ResolutionIssue; schedule_impact: BlockOptimizationResult }>;
+  transitionBlock: (
+    id: string,
+    action: BlockAction,
+    options?: { note?: string; trimmed_duration_minutes?: number },
+  ) => Promise<BlockDemand>;
+  updateWorkflowIssue: (
+    id: string,
+    changes: { status?: ResolutionIssue["status"]; assigned_department?: string },
+  ) => Promise<void>;
+  submitFieldReport: (
+    input: FieldReportInput,
+  ) => Promise<{
+    report: FieldReport;
+    issue: ResolutionIssue;
+    schedule_impact: BlockOptimizationResult;
+  }>;
   runBlockOptimization: () => Promise<BlockOptimizationResult>;
   engineName: string;
 }
@@ -57,28 +86,36 @@ const Ctx = createContext<TrackwiseState | null>(null);
 let seq = 0;
 
 export function TrackwiseProvider({ children }: { children: ReactNode }) {
-  const [user, setUserState] = useState<User | null>(() => {
-    if (typeof window !== "undefined") {
-      const stored = sessionStorage.getItem("trackwise_user");
-      if (stored) {
-        try {
-          return JSON.parse(stored) as User;
-        } catch {
-          sessionStorage.removeItem("trackwise_user");
-        }
-      }
-    }
-    return null;
-  });
-  const [workflow, setWorkflow] = useState<WorkflowSnapshot>(loadWorkflowSnapshot);
+  // Browser-only state (session user, saved workflow) is restored in an effect after mount.
+  // Reading it during the first render made the client HTML differ from the server HTML (hydration error).
+  const [user, setUserState] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [workflow, setWorkflow] = useState<WorkflowSnapshot>(DEMO_WORKFLOW);
   const workflowRef = useRef(workflow);
-  const [role, setRoleState] = useState<Role>(() => user?.role || "Station Master");
+  const [role, setRoleState] = useState<Role>("Station Master");
   const [plan, setPlan] = useState<OptimizationResult | null>(null);
   const [planStatus, setStatus] = useState<PlanStatus>("none");
   const [delays, setDelays] = useState<Record<string, number>>({});
   const [generating, setGenerating] = useState(false);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const engine = useMemo(() => getEngine(), []);
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("trackwise_user");
+      if (stored) {
+        const saved = JSON.parse(stored) as User;
+        setUserState(saved);
+        setRoleState(saved.role || "Station Master");
+      }
+    } catch {
+      sessionStorage.removeItem("trackwise_user");
+    }
+    const savedWorkflow = loadWorkflowSnapshot();
+    workflowRef.current = savedWorkflow;
+    setWorkflow(savedWorkflow);
+    setAuthReady(true);
+  }, []);
 
   const commitWorkflow = useCallback((next: WorkflowSnapshot) => {
     workflowRef.current = next;
@@ -124,7 +161,9 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
           "SHA-256",
           new TextEncoder().encode(JSON.stringify(event)),
         );
-        integrityHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+        integrityHash = Array.from(new Uint8Array(digest), (byte) =>
+          byte.toString(16).padStart(2, "0"),
+        ).join("");
       }
       return { ...event, integrity_hash: integrityHash };
     },
@@ -136,7 +175,9 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
       void workflowService
         .snapshot()
         .then(commitWorkflow)
-        .catch((error: unknown) => console.warn("Workflow API unavailable; retaining saved demo state.", error));
+        .catch((error: unknown) =>
+          console.warn("Workflow API unavailable; retaining saved demo state.", error),
+        );
     }
   }, [commitWorkflow, user]);
 
@@ -183,7 +224,8 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
 
   const createBlockDemand = useCallback(
     async (input: BlockDemandInput) => {
-      if (!canCreateBlock(role, input.department)) throw new Error(`${role} cannot create ${input.department} block requests.`);
+      if (!canCreateBlock(role, input.department))
+        throw new Error(`${role} cannot create ${input.department} block requests.`);
       const created = workflowApiConfigured
         ? await workflowService.createBlock(input)
         : {
@@ -193,9 +235,18 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
             status: "Draft" as const,
             replan_required: false,
           };
-      const next = { ...workflowRef.current, block_requests: [created, ...workflowRef.current.block_requests] };
+      const next = {
+        ...workflowRef.current,
+        block_requests: [created, ...workflowRef.current.block_requests],
+      };
       if (!workflowApiConfigured) {
-        const event = await appendLocalEvent(next, created.id, "Block demand created", null, created);
+        const event = await appendLocalEvent(
+          next,
+          created.id,
+          "Block demand created",
+          null,
+          created,
+        );
         next.audit = [...next.audit, event];
       } else {
         const snapshot = await workflowService.snapshot();
@@ -209,10 +260,15 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
   );
 
   const transitionBlock = useCallback(
-    async (id: string, action: BlockAction, options: { note?: string; trimmed_duration_minutes?: number } = {}) => {
+    async (
+      id: string,
+      action: BlockAction,
+      options: { note?: string; trimmed_duration_minutes?: number } = {},
+    ) => {
       const existing = workflowRef.current.block_requests.find((item) => item.id === id);
       if (!existing) throw new Error("Block request not found.");
-      if (!canTransitionBlock(existing, action, role)) throw new Error(`${role} cannot ${action} this request in ${existing.status}.`);
+      if (!canTransitionBlock(existing, action, role))
+        throw new Error(`${role} cannot ${action} this request in ${existing.status}.`);
       const updated = workflowApiConfigured
         ? await workflowService.transitionBlock(id, action, options)
         : {
@@ -220,27 +276,37 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
             ...(action === "trim" && options.trimmed_duration_minutes
               ? { duration_minutes: options.trimmed_duration_minutes, replan_required: true }
               : {}),
-            status: ({
-              submit: "Submitted",
-              validate: "AI Validated",
-              review: "Pending Control Review",
-              sanction: "Sanctioned",
-              trim: "AI Validated",
-              reject: "Rejected",
-              resubmit: "Submitted",
-              dispatch: "Dispatched",
-              start: "In Progress",
-              complete: "Completed",
-            } as const)[action],
+            status: (
+              {
+                submit: "Submitted",
+                validate: "AI Validated",
+                review: "Pending Control Review",
+                sanction: "Sanctioned",
+                trim: "AI Validated",
+                reject: "Rejected",
+                resubmit: "Submitted",
+                dispatch: "Dispatched",
+                start: "In Progress",
+                complete: "Completed",
+              } as const
+            )[action],
             ...(options.note ? { last_action_note: options.note } : {}),
             updated_at: new Date().toISOString(),
           };
       const next = {
         ...workflowRef.current,
-        block_requests: workflowRef.current.block_requests.map((item) => (item.id === id ? updated : item)),
+        block_requests: workflowRef.current.block_requests.map((item) =>
+          item.id === id ? updated : item,
+        ),
       };
       if (!workflowApiConfigured) {
-        const event = await appendLocalEvent(next, id, action, { status: existing.status }, { status: updated.status, duration_minutes: updated.duration_minutes });
+        const event = await appendLocalEvent(
+          next,
+          id,
+          action,
+          { status: existing.status },
+          { status: updated.status, duration_minutes: updated.duration_minutes },
+        );
         next.audit = [...next.audit, event];
       } else {
         const snapshot = await workflowService.snapshot();
@@ -254,10 +320,14 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
   );
 
   const updateWorkflowIssue = useCallback(
-    async (id: string, changes: { status?: ResolutionIssue["status"]; assigned_department?: string }) => {
+    async (
+      id: string,
+      changes: { status?: ResolutionIssue["status"]; assigned_department?: string },
+    ) => {
       const existing = workflowRef.current.issues.find((issue) => issue.id === id);
       if (!existing) throw new Error("Issue not found.");
-      if (!canManageWorkflowIssue(existing, role)) throw new Error(`${role} cannot update this issue.`);
+      if (!canManageWorkflowIssue(existing, role))
+        throw new Error(`${role} cannot update this issue.`);
       if (workflowApiConfigured) {
         await workflowService.updateIssue(id, changes);
         await refreshWorkflow();
@@ -290,10 +360,24 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
         reported_by: user?.employeeId ?? "DEMO-USER",
         received_at: now,
       };
-      const linkedBlock = workflowRef.current.block_requests.find((block) => block.id === input.block_id);
+      const linkedBlock = workflowRef.current.block_requests.find(
+        (block) => block.id === input.block_id,
+      );
       const source: ResolutionIssue["source"] = linkedBlock
-        ? linkedBlock.department === "Engineering" ? "TMS" : linkedBlock.department === "S&T" ? "SMMS" : "TDMS"
-        : role === "TMS Officer" ? "TMS" : role === "SMMS Officer" ? "SMMS" : role === "TDMS Officer" ? "TDMS" : role === "COA Controller" ? "COA" : "Station Master";
+        ? linkedBlock.department === "Engineering"
+          ? "TMS"
+          : linkedBlock.department === "S&T"
+            ? "SMMS"
+            : "TDMS"
+        : role === "TMS Officer"
+          ? "TMS"
+          : role === "SMMS Officer"
+            ? "SMMS"
+            : role === "TDMS Officer"
+              ? "TDMS"
+              : role === "COA Controller"
+                ? "COA"
+                : "Station Master";
       const issue: ResolutionIssue = {
         id: `ISS-DEMO-${Date.now().toString(36).toUpperCase()}`,
         source,
@@ -310,18 +394,38 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
         field_reports: [report, ...workflowRef.current.field_reports],
         issues: [issue, ...workflowRef.current.issues],
         block_requests: workflowRef.current.block_requests.map((block) =>
-          block.id !== input.block_id ? block : input.event_type === "Work Started" && block.status === "Dispatched"
-            ? { ...block, status: "In Progress" }
-            : input.event_type === "Work Completed Early" && block.status === "In Progress"
-              ? { ...block, status: "Completed" }
-              : { ...block, replan_required: true },
+          block.id !== input.block_id
+            ? block
+            : input.event_type === "Work Started" && block.status === "Dispatched"
+              ? { ...block, status: "In Progress" }
+              : input.event_type === "Work Completed Early" && block.status === "In Progress"
+                ? { ...block, status: "Completed" }
+                : { ...block, replan_required: true },
         ),
       };
       const impact = runDemoBlockOptimizer(next.block_requests, next.train_paths);
       next.last_optimization = impact;
-      const reportEvent = await appendLocalEvent(next, report.id, "Field report submitted", null, report);
-      const issueEvent = await appendLocalEvent({ ...next, audit: [...next.audit, reportEvent] }, issue.id, "Issue created from field report", null, issue);
-      const replanEvent = await appendLocalEvent({ ...next, audit: [...next.audit, reportEvent, issueEvent] }, "OPTIMIZER", "Disruption replanning completed", null, { solver_status: impact.solver_status, scheduled: impact.metrics.scheduled });
+      const reportEvent = await appendLocalEvent(
+        next,
+        report.id,
+        "Field report submitted",
+        null,
+        report,
+      );
+      const issueEvent = await appendLocalEvent(
+        { ...next, audit: [...next.audit, reportEvent] },
+        issue.id,
+        "Issue created from field report",
+        null,
+        issue,
+      );
+      const replanEvent = await appendLocalEvent(
+        { ...next, audit: [...next.audit, reportEvent, issueEvent] },
+        "OPTIMIZER",
+        "Disruption replanning completed",
+        null,
+        { solver_status: impact.solver_status, scheduled: impact.metrics.scheduled },
+      );
       next.audit = [...next.audit, reportEvent, issueEvent, replanEvent];
       commitWorkflow(next);
       return { report, issue, schedule_impact: impact };
@@ -335,7 +439,10 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
       await refreshWorkflow();
       return result;
     }
-    const result = runDemoBlockOptimizer(workflowRef.current.block_requests, workflowRef.current.train_paths);
+    const result = runDemoBlockOptimizer(
+      workflowRef.current.block_requests,
+      workflowRef.current.train_paths,
+    );
     const scheduledIds = new Set(result.schedule.map((item) => item.request_id));
     const previous = workflowRef.current;
     const next = {
@@ -360,7 +467,11 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
         next.audit = [...next.audit, event];
       }
     }
-    const event = await appendLocalEvent(next, "OPTIMIZER", "Demo schedule generated", null, { mode: result.solver_mode, status: result.solver_status, scheduled: result.metrics.scheduled });
+    const event = await appendLocalEvent(next, "OPTIMIZER", "Demo schedule generated", null, {
+      mode: result.solver_mode,
+      status: result.solver_status,
+      scheduled: result.metrics.scheduled,
+    });
     next.audit = [...next.audit, event];
     commitWorkflow(next);
     return result;
@@ -397,6 +508,7 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
 
   const value: TrackwiseState = {
     user,
+    authReady,
     setUser,
     role,
     setRole,
@@ -444,7 +556,8 @@ export const ROLES: Role[] = [
   "Maintenance Engineer",
 ];
 
-export const canApprove = (role: Role) => role === "Admin" || role === "DRM" || role === "Station Master";
+export const canApprove = (role: Role) =>
+  role === "Admin" || role === "DRM" || role === "Station Master";
 
 export const roleLandingPath = (role: Role) => {
   const paths: Record<Role, string> = {

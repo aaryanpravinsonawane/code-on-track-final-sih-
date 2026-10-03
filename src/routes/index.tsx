@@ -30,6 +30,7 @@ import { KpiCard } from "@/components/trackwise/KpiCard";
 import { NetworkMap } from "@/components/trackwise/NetworkMap";
 import { RailwayKpiGrid } from "@/components/trackwise/RailwayAnalytics";
 import { LiveOperationsFeed } from "@/components/realtime/LiveOperationsFeed";
+import { CommandCenterHero } from "@/components/trackwise/command/CommandCenterHero";
 import { DeptTag, Panel, PriorityTag } from "@/components/trackwise/shared";
 import { RESOURCES, SECTIONS, TASKS, TRAINS, WINDOWS, fmt } from "@/lib/trackwise/data";
 import { conflictingTrains, priorityBand, priorityScore } from "@/lib/trackwise/engine";
@@ -39,7 +40,7 @@ import { useLiveSimulation } from "@/lib/liveSimulation";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Railway Management System — Integrated Operations Dashboard" },
+      { title: "CodeOnTrack — Rail Command Center" },
       {
         name: "description",
         content:
@@ -95,9 +96,20 @@ function Dashboard() {
 
   return (
     <MainShell
-      title="RAILWAY MANAGEMENT SYSTEM"
-      subtitle="Integrated TMS · TDMS · SMMS · COA · Station Master · AI Priority Engine"
+      variant="command"
+      title="Command Center"
+      subtitle="Central Railway · Manmad–Hazur Sahib Nanded corridor"
     >
+      <CommandCenterHero live={live} />
+      <div className="mb-3 mt-6 flex items-center gap-3">
+        <p className="text-[10px] font-bold tracking-[0.18em] text-rail-yellow">
+          DIVISION OPERATIONS
+        </p>
+        <p className="hidden text-xs text-muted-foreground sm:block">
+          Integrated TMS · TDMS · SMMS · COA · Station Master · AI Priority Engine
+        </p>
+        <div className="h-px flex-1 bg-border" />
+      </div>
       <RailwayKpiGrid />
       <div className="mt-4" />
       <LiveOperationsFeed compact />

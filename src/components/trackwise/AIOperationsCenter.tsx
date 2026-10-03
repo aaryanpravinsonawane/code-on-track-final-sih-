@@ -48,14 +48,14 @@ export function AIOperationsCenter() {
       </div>
       {error && <p className="mb-3 rounded-md border border-warn/30 bg-warn/10 p-3 text-xs text-warn-foreground">{error}</p>}
       <div className="grid gap-3 md:grid-cols-3">
-        <Metric icon={TrainFront} label="Recommended Track" value={String(result?.assignments[0]?.assigned_track ?? "Awaiting run")} />
+        <Metric icon={TrainFront} label="Recommended Track" value={String(result?.assignments[0]?.["assigned_track"] ?? "Awaiting run")} />
         <Metric icon={CheckCircle2} label="AI Optimization Score" value={result?.optimization_score != null ? `${result.optimization_score}%` : "Awaiting run"} />
         <Metric icon={AlertTriangle} label="Delay Risk" value={prediction ? `${prediction.delay_probability}% · ${prediction.risk_level}` : "Awaiting run"} tone={prediction?.risk_level === "High" ? "danger" : "default"} />
       </div>
       {result?.conflicts && result.conflicts.length > 0 && (
         <Panel title="Conflict Warnings" className="mt-3">
           <ul className="space-y-2 text-sm">
-            {result.conflicts.map((conflict, index) => <li key={index} className="flex items-start gap-2 text-danger"><AlertTriangle className="mt-0.5 size-4 shrink-0" /> {String(conflict.suggested_solution ?? "Conflict detected")}</li>)}
+            {result.conflicts.map((conflict, index) => <li key={index} className="flex items-start gap-2 text-danger"><AlertTriangle className="mt-0.5 size-4 shrink-0" /> {String(conflict["suggested_solution"] ?? "Conflict detected")}</li>)}
           </ul>
         </Panel>
       )}

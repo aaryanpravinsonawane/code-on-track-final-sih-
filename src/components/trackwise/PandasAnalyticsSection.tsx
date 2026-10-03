@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
 import { Activity, Download, Gauge, Signal, TrainFront, Zap } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { dataAnalyticsService, type AnalyticsSummary } from "@/services/api";
+import { dataAnalyticsService, workflowApiConfigured, type AnalyticsSummary } from "@/services/api";
 import { ChartBox } from "./ChartBox";
 import { KpiCard } from "./KpiCard";
 import { Panel } from "./shared";
 
 export function PandasAnalyticsSection() {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    workflowApiConfigured
+      ? ""
+      : "Analytics API not configured (set VITE_API_URL in .env); live dashboard data remains available.",
+  );
   useEffect(() => {
+    if (!workflowApiConfigured) return;
     void dataAnalyticsService
       .summary("daily")
       .then(setSummary)
@@ -38,7 +43,7 @@ export function PandasAnalyticsSection() {
   const smms = summary.smms.kpis;
   const tdms = summary.tdms.kpis;
   const openIssues = summary.department_report.reduce(
-    (total, row) => total + Number(row.open ?? 0),
+    (total, row) => total + Number(row["open"] ?? 0),
     0,
   );
   return (
@@ -62,26 +67,26 @@ export function PandasAnalyticsSection() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard
           label="Track Utilization"
-          value={tms.track_utilization_percent ?? 0}
+          value={tms["track_utilization_percent"] ?? 0}
           unit="%"
           icon={TrainFront}
-          hint={`${tms.available_tracks ?? 0} available`}
+          hint={`${tms["available_tracks"] ?? 0} available`}
         />
         <KpiCard
           label="Signal Health"
-          value={smms.signal_health_percent ?? 0}
+          value={smms["signal_health_percent"] ?? 0}
           unit="%"
           icon={Signal}
-          tone={Number(smms.signal_health_percent) < 90 ? "warn" : "success"}
-          hint={`${smms.fault_frequency ?? 0} faults / signal`}
+          tone={Number(smms["signal_health_percent"]) < 90 ? "warn" : "success"}
+          hint={`${smms["fault_frequency"] ?? 0} faults / signal`}
         />
         <KpiCard
           label="Power Efficiency"
-          value={tdms.efficiency_score ?? 0}
+          value={tdms["efficiency_score"] ?? 0}
           unit="%"
           icon={Zap}
           tone="success"
-          hint={`${tdms.peak_load ?? 0} MW peak`}
+          hint={`${tdms["peak_load"] ?? 0} MW peak`}
         />
         <KpiCard
           label="Open Issues"
@@ -94,9 +99,9 @@ export function PandasAnalyticsSection() {
           label="System Performance"
           value={
             Math.round(
-              ((Number(tms.track_performance_score ?? 0) +
-                Number(smms.maintenance_efficiency ?? 0) +
-                Number(tdms.efficiency_score ?? 0)) /
+              ((Number(tms["track_performance_score"] ?? 0) +
+                Number(smms["maintenance_efficiency"] ?? 0) +
+                Number(tdms["efficiency_score"] ?? 0)) /
                 3) *
                 10,
             ) / 10
@@ -109,21 +114,21 @@ export function PandasAnalyticsSection() {
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <DataChart
           title="Track Status"
-          data={summary.tms.charts.status}
+          data={summary.tms.charts["status"] ?? []}
           category="status"
           value="count"
           color="var(--primary)"
         />
         <DataChart
           title="Signal Health"
-          data={summary.smms.charts.health}
+          data={summary.smms.charts["health"] ?? []}
           category="health"
           value="count"
           color="var(--info)"
         />
         <DataChart
           title="Power Consumption"
-          data={summary.tdms.charts.consumption.slice(-12)}
+          data={(summary.tdms.charts["consumption"] ?? []).slice(-12)}
           category="timestamp"
           value="consumption"
           color="var(--rail-orange)"

@@ -71,6 +71,12 @@
   --color-snt: var(--snt);
   --color-trd: var(--trd);
   --color-rail-orange: var(--rail-orange);
+  --color-rail-yellow: var(--rail-yellow);
+  --color-st-ontime: var(--st-ontime);
+  --color-st-delayed: var(--st-delayed);
+  --color-st-critical: var(--st-critical);
+  --color-st-held: var(--st-held);
+  --color-st-block: var(--st-block);
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -123,6 +129,12 @@
   --snt: oklch(0.62 0.14 190);
   --trd: oklch(0.66 0.16 55);
   --rail-orange: oklch(0.68 0.19 48);
+  --rail-yellow: oklch(0.86 0.17 95);
+  --st-ontime: oklch(0.74 0.18 150);
+  --st-delayed: oklch(0.86 0.17 95);
+  --st-critical: oklch(0.66 0.23 25);
+  --st-held: oklch(0.75 0.17 55);
+  --st-block: oklch(0.72 0.13 100);
 }
 
 .dark {
@@ -170,6 +182,106 @@
   --snt: oklch(0.72 0.13 190);
   --trd: oklch(0.74 0.15 55);
   --rail-orange: oklch(0.76 0.16 52);
+}
+
+/* Command Center control-room theme. Scoped: only applied when MainShell variant="command". */
+.command-theme {
+  --background: oklch(0.165 0.05 262);
+  --foreground: oklch(0.96 0.01 250);
+  --card: oklch(0.2 0.055 262);
+  --card-foreground: oklch(0.96 0.01 250);
+  --popover: oklch(0.2 0.055 262);
+  --popover-foreground: oklch(0.96 0.01 250);
+  --primary: oklch(0.68 0.16 255);
+  --primary-foreground: oklch(0.15 0.05 262);
+  --secondary: oklch(0.27 0.05 262);
+  --secondary-foreground: oklch(0.96 0.01 250);
+  --muted: oklch(0.25 0.05 262);
+  --muted-foreground: oklch(0.74 0.04 255);
+  --accent: oklch(0.27 0.05 262);
+  --accent-foreground: oklch(0.96 0.01 250);
+  --border: oklch(0.62 0.07 255 / 0.28);
+  --input: oklch(0.62 0.07 255 / 0.3);
+  --ring: oklch(0.68 0.16 255);
+  --panel: oklch(0.205 0.055 262);
+  --panel-muted: oklch(0.245 0.055 262);
+  --grid: oklch(0.62 0.07 255 / 0.18);
+  --warn: oklch(0.85 0.16 90);
+  --warn-foreground: oklch(0.88 0.14 92);
+  --success: oklch(0.74 0.18 150);
+  --danger: oklch(0.68 0.21 25);
+  --info: oklch(0.72 0.13 240);
+
+  /* @theme inline colour aliases resolve once at :root, so re-declare them here to pick up the scoped values. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-panel: var(--panel);
+  --color-panel-muted: var(--panel-muted);
+  --color-grid: var(--grid);
+  --color-warn: var(--warn);
+  --color-warn-foreground: var(--warn-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-eng: var(--eng);
+  --color-snt: var(--snt);
+  --color-trd: var(--trd);
+  --color-rail-orange: var(--rail-orange);
+  --color-rail-yellow: var(--rail-yellow);
+  --color-st-ontime: var(--st-ontime);
+  --color-st-delayed: var(--st-delayed);
+  --color-st-critical: var(--st-critical);
+  --color-st-held: var(--st-held);
+  --color-st-block: var(--st-block);
+}
+
+.command-theme .rail-grid {
+  background-image:
+    linear-gradient(to right, oklch(0.8 0.08 250 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.8 0.08 250 / 0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.command-theme .panel-card {
+  backdrop-filter: none;
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+
+.command-theme .recharts-text,
+.command-theme .recharts-legend-item-text {
+  fill: var(--muted-foreground);
 }
 
 @layer base {
