@@ -664,7 +664,10 @@ export function StationMapCanvas({ focusAsset }: { focusAsset?: string }) {
                     textAnchor="middle"
                     fontSize={9}
                     fontWeight={800}
-                    fill="var(--st-block)" stroke="var(--background)" strokeWidth={3} paintOrder="stroke"
+                    fill="var(--st-block)"
+                    stroke="var(--background)"
+                    strokeWidth={3}
+                    paintOrder="stroke"
                   >
                     BLK-101
                   </text>

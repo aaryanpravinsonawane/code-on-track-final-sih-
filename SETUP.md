@@ -17,5 +17,5 @@ npm run dev       # http://localhost:8080
 ## Notes on the UI
 
 - **Design system:** every page uses the CODEONTRACK dark-navy command-center theme (`.command-theme` in `src/styles.css`, applied by `MainShell`). The Admin Command Center (`/`) is the visual reference.
-- **Maps are flat 2D:** the Command Center *Live corridor* (Manmad → Hazur Sahib Nanded) and the *Station Map* (NDG / Nandgaon Junction yard) are deterministic SVG maps. They need no map tiles or API keys and are labelled as simulated demo data.
+- **Maps are flat 2D:** the Command Center _Live corridor_ (Manmad → Hazur Sahib Nanded) and the _Station Map_ (NDG / Nandgaon Junction yard) are deterministic SVG maps. They need no map tiles or API keys and are labelled as simulated demo data.
 - **Login:** the login system is unchanged (mock authentication; the selected role decides the landing page). The railway artwork is a vector scene in `src/components/trackwise/LoginRailwayScene.tsx`.

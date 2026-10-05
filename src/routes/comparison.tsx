@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { MainShell } from "@/components/trackwise/MainShell";
 import { ChartBox } from "@/components/trackwise/ChartBox";
 import { Panel } from "@/components/trackwise/shared";
@@ -18,7 +27,8 @@ export const Route = createFileRoute("/comparison")({
       { property: "og:title", content: "Traditional vs CODEONTRACK Coordinated Planning" },
       {
         property: "og:description",
-        content: "Simulation results using representative data — blocks, window hours, conflicts and utilization.",
+        content:
+          "Simulation results using representative data — blocks, window hours, conflicts and utilization.",
       },
     ],
   }),
@@ -37,9 +47,17 @@ function ComparisonPage() {
 
   const chart = [
     { metric: "Blocks", Traditional: TRADITIONAL_BASELINE.blocks, CODEONTRACK: tw.blocks },
-    { metric: "Window hours", Traditional: TRADITIONAL_BASELINE.windowHours, CODEONTRACK: tw.windowHours },
+    {
+      metric: "Window hours",
+      Traditional: TRADITIONAL_BASELINE.windowHours,
+      CODEONTRACK: tw.windowHours,
+    },
     { metric: "Conflicts", Traditional: TRADITIONAL_BASELINE.conflicts, CODEONTRACK: tw.conflicts },
-    { metric: "Utilization %", Traditional: TRADITIONAL_BASELINE.utilization, CODEONTRACK: tw.utilization },
+    {
+      metric: "Utilization %",
+      Traditional: TRADITIONAL_BASELINE.utilization,
+      CODEONTRACK: tw.utilization,
+    },
   ];
 
   return (
@@ -48,8 +66,9 @@ function ComparisonPage() {
       subtitle="SIMULATION RESULTS USING REPRESENTATIVE DATA — not actual Indian Railways statistics"
     >
       <div className="mb-4 rounded-md border border-warn/40 bg-warn/10 px-4 py-3 text-sm font-semibold text-warn-foreground">
-        SIMULATION RESULTS USING REPRESENTATIVE DATA. These figures are produced by a prototype model on
-        synthetic timetable and maintenance data and do not represent real railway performance.
+        SIMULATION RESULTS USING REPRESENTATIVE DATA. These figures are produced by a prototype
+        model on synthetic timetable and maintenance data and do not represent real railway
+        performance.
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -85,7 +104,11 @@ function ComparisonPage() {
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="Traditional" fill="var(--color-muted-foreground)" radius={[3, 3, 0, 0]} />
+              <Bar
+                dataKey="Traditional"
+                fill="var(--color-muted-foreground)"
+                radius={[3, 3, 0, 0]}
+              />
               <Bar dataKey="CODEONTRACK" fill="var(--color-primary)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -101,7 +124,11 @@ function Rows({ rows, good }: { rows: [string, string | number][]; good?: boolea
       {rows.map(([k, v]) => (
         <li key={k} className="flex items-center justify-between py-3">
           <span className="text-sm text-muted-foreground">{k}</span>
-          <span className={`font-display text-2xl font-bold ${good ? "text-success" : "text-foreground"}`}>{v}</span>
+          <span
+            className={`font-display text-2xl font-bold ${good ? "text-success" : "text-foreground"}`}
+          >
+            {v}
+          </span>
         </li>
       ))}
     </ul>

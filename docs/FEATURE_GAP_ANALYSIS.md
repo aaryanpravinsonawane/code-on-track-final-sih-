@@ -15,25 +15,25 @@ Audit basis: the active `code-on-track-final-sih-` repository, its frontend rout
 
 ## Capability Matrix
 
-| Capability | Existing coverage | Gap / required upgrade |
-| --- | --- | --- |
-| Central Control Console | Dashboard, priority queue, incidents, alerts | No shared operational command state spanning requests, approvals, issues, and replans |
-| Department-wise consoles | TMS, SMMS, TDMS, COA, DRM routes | Pages mainly read static/generated data; department actions do not share a demand lifecycle |
-| Station Master operations | Station page and station telemetry components | Operational records/actions are not centrally persisted or fully stateful |
-| TMS / Civil Engineering | Department page and Engineering fixtures | No end-to-end request, sanction, execution workflow |
-| SMMS / S&T | Department page and S&T fixtures | No end-to-end request, sanction, execution workflow |
-| TDMS / TRD | Department page and TRD fixtures | No end-to-end request, sanction, execution workflow |
-| COA / statutory workflow | COA route and train data | No enforceable control-review transitions or statutory audit evidence |
-| Maintenance / Field Reporter | Maintenance/work-order screens | No event submission that creates an issue and triggers a replan |
-| AI Block Optimizer | Browser heuristic; OR-Tools package installed | Backend solver models train allocation, not maintenance blocks; page recommendation/conflict summaries are hard-coded |
-| Conflict detection | Local heuristic checks train overlap; backend train conflict detector | No integrated overlap + resource + train-window feasibility report for maintenance demands |
-| Block bundling | Browser heuristic bundles seeded tasks in one section | Not a first-class shared request or approval entity |
-| Train-path protection | Heuristic checks train occupancy with a buffer | No independent, solver-backed maintenance-window validation in the backend |
-| Approval / sanction / trim / reject | Plan status draft/approved/rejected/modified | No per-demand state machine, trim action, resubmission, dispatch, or execution state |
-| Audit and history | Session audit list and timeline page | No durable entity-linked before/after history or hash chain |
-| Live operational updates | Simulated hooks, notification UI, socket client dependency | No workflow event stream connected to persisted mutations |
-| Export / reporting | Analytics and Excel export endpoints, reports route | Reports are not consistently sourced from a unified workflow store |
-| Role-based access control | Demo role list, permission helpers, guarded navigation | UI-only/coarse authorization; workflow transitions need explicit role checks server-side and client-side |
+| Capability                          | Existing coverage                                                     | Gap / required upgrade                                                                                                |
+| ----------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Central Control Console             | Dashboard, priority queue, incidents, alerts                          | No shared operational command state spanning requests, approvals, issues, and replans                                 |
+| Department-wise consoles            | TMS, SMMS, TDMS, COA, DRM routes                                      | Pages mainly read static/generated data; department actions do not share a demand lifecycle                           |
+| Station Master operations           | Station page and station telemetry components                         | Operational records/actions are not centrally persisted or fully stateful                                             |
+| TMS / Civil Engineering             | Department page and Engineering fixtures                              | No end-to-end request, sanction, execution workflow                                                                   |
+| SMMS / S&T                          | Department page and S&T fixtures                                      | No end-to-end request, sanction, execution workflow                                                                   |
+| TDMS / TRD                          | Department page and TRD fixtures                                      | No end-to-end request, sanction, execution workflow                                                                   |
+| COA / statutory workflow            | COA route and train data                                              | No enforceable control-review transitions or statutory audit evidence                                                 |
+| Maintenance / Field Reporter        | Maintenance/work-order screens                                        | No event submission that creates an issue and triggers a replan                                                       |
+| AI Block Optimizer                  | Browser heuristic; OR-Tools package installed                         | Backend solver models train allocation, not maintenance blocks; page recommendation/conflict summaries are hard-coded |
+| Conflict detection                  | Local heuristic checks train overlap; backend train conflict detector | No integrated overlap + resource + train-window feasibility report for maintenance demands                            |
+| Block bundling                      | Browser heuristic bundles seeded tasks in one section                 | Not a first-class shared request or approval entity                                                                   |
+| Train-path protection               | Heuristic checks train occupancy with a buffer                        | No independent, solver-backed maintenance-window validation in the backend                                            |
+| Approval / sanction / trim / reject | Plan status draft/approved/rejected/modified                          | No per-demand state machine, trim action, resubmission, dispatch, or execution state                                  |
+| Audit and history                   | Session audit list and timeline page                                  | No durable entity-linked before/after history or hash chain                                                           |
+| Live operational updates            | Simulated hooks, notification UI, socket client dependency            | No workflow event stream connected to persisted mutations                                                             |
+| Export / reporting                  | Analytics and Excel export endpoints, reports route                   | Reports are not consistently sourced from a unified workflow store                                                    |
+| Role-based access control           | Demo role list, permission helpers, guarded navigation                | UI-only/coarse authorization; workflow transitions need explicit role checks server-side and client-side              |
 
 ## Scope and Safety Notes
 

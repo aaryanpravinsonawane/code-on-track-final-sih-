@@ -66,7 +66,11 @@ function PlannerPage() {
             disabled={running}
             className="inline-flex items-center gap-3 rounded-lg bg-primary px-10 py-5 font-display text-lg font-bold tracking-wide text-primary-foreground shadow-panel transition hover:bg-primary/90 disabled:opacity-70"
           >
-            {running ? <Loader2 className="size-5 animate-spin" /> : <Sparkles className="size-5" />}
+            {running ? (
+              <Loader2 className="size-5 animate-spin" />
+            ) : (
+              <Sparkles className="size-5" />
+            )}
             Generate Optimized Plan
           </button>
           <p className="max-w-xl text-xs text-muted-foreground">
@@ -110,12 +114,24 @@ function PlannerPage() {
             <Stat label="Blocks Planned" value={plan.metrics.blocksPlanned} />
             <Stat label="Tasks Bundled" value={plan.metrics.tasksBundled} />
             <Stat label="Avg Block Utilization" value={`${plan.metrics.avgUtilization}%`} />
-            <Stat label="Train Conflicts" value={plan.metrics.conflicts} tone={plan.metrics.conflicts ? "danger" : "success"} />
+            <Stat
+              label="Train Conflicts"
+              value={plan.metrics.conflicts}
+              tone={plan.metrics.conflicts ? "danger" : "success"}
+            />
           </div>
 
           <div className="grid gap-4 xl:grid-cols-2">
             {plan.blocks.map((b) => (
-              <Panel key={b.id} title={`Block ${b.id} · Section ${b.section}`} right={<span className="font-mono text-sm font-semibold">{fmt(b.start)}–{fmt(b.end)}</span>}>
+              <Panel
+                key={b.id}
+                title={`Block ${b.id} · Section ${b.section}`}
+                right={
+                  <span className="font-mono text-sm font-semibold">
+                    {fmt(b.start)}–{fmt(b.end)}
+                  </span>
+                }
+              >
                 <div className="flex flex-wrap gap-2">
                   {b.departments.map((d) => (
                     <DeptTag key={d} dept={d} />
@@ -123,7 +139,9 @@ function PlannerPage() {
                   <span className="ml-auto text-xs text-muted-foreground">
                     Utilization <b className="text-foreground">{b.utilization}%</b> · Tasks bundled{" "}
                     <b className="text-foreground">{b.taskIds.length}</b> · Conflicts{" "}
-                    <b className={b.trainConflicts ? "text-danger" : "text-success"}>{b.trainConflicts}</b>
+                    <b className={b.trainConflicts ? "text-danger" : "text-success"}>
+                      {b.trainConflicts}
+                    </b>
                   </span>
                 </div>
 
@@ -131,7 +149,10 @@ function PlannerPage() {
                   {b.taskIds.map((id) => {
                     const t = TASKS.find((x) => x.id === id)!;
                     return (
-                      <li key={id} className="flex flex-wrap items-center gap-2 rounded-md bg-panel-muted px-3 py-2 text-sm">
+                      <li
+                        key={id}
+                        className="flex flex-wrap items-center gap-2 rounded-md bg-panel-muted px-3 py-2 text-sm"
+                      >
                         <span className="font-mono text-xs font-semibold">{t.id}</span>
                         <DeptTag dept={t.department} />
                         <span className="flex-1">{t.workType}</span>
@@ -142,7 +163,9 @@ function PlannerPage() {
                 </ul>
 
                 <div className="mt-3 rounded-md border border-success/25 bg-success/8 p-3">
-                  <p className="text-[11px] font-bold tracking-[0.08em] uppercase text-success">Why selected</p>
+                  <p className="text-[11px] font-bold tracking-[0.08em] uppercase text-success">
+                    Why selected
+                  </p>
                   <ul className="mt-1.5 space-y-1 text-xs text-foreground">
                     {b.reasonsAccepted.map((r) => (
                       <li key={r}>{r}</li>
@@ -159,7 +182,10 @@ function PlannerPage() {
                 {plan.rejected.map((r) => {
                   const t = TASKS.find((x) => x.id === r.taskId)!;
                   return (
-                    <div key={r.taskId} className="rounded-md border border-danger/25 bg-danger/6 p-3">
+                    <div
+                      key={r.taskId}
+                      className="rounded-md border border-danger/25 bg-danger/6 p-3"
+                    >
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-semibold">{t.id}</span>
                         <DeptTag dept={t.department} />
@@ -184,20 +210,27 @@ function PlannerPage() {
           <Panel title="Approval Workflow" className="mt-4">
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm text-muted-foreground">
-                Current plan status:{" "}
-                <b className="text-foreground capitalize">{planStatus}</b> · acting as <b className="text-foreground">{role}</b>
+                Current plan status: <b className="text-foreground capitalize">{planStatus}</b> ·
+                acting as <b className="text-foreground">{role}</b>
               </span>
               <div className="ml-auto flex flex-wrap gap-2">
                 <button
                   disabled={!canApprove(role)}
-                  onClick={() => setPlanStatus("approved", `${plan.metrics.blocksPlanned} blocks authorised for simulation`)}
+                  onClick={() =>
+                    setPlanStatus(
+                      "approved",
+                      `${plan.metrics.blocksPlanned} blocks authorised for simulation`,
+                    )
+                  }
                   className="inline-flex items-center gap-1.5 rounded-md bg-success px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
                 >
                   <Check className="size-4" /> Approve Plan
                 </button>
                 <button
                   disabled={!canApprove(role)}
-                  onClick={() => setPlanStatus("modified", "Plan returned to planner for adjustment")}
+                  onClick={() =>
+                    setPlanStatus("modified", "Plan returned to planner for adjustment")
+                  }
                   className="rounded-md border border-input bg-background px-4 py-2 text-sm font-semibold disabled:opacity-50"
                 >
                   Modify
@@ -223,11 +256,23 @@ function PlannerPage() {
   );
 }
 
-function Stat({ label, value, tone = "default" }: { label: string; value: string | number; tone?: string }) {
+function Stat({
+  label,
+  value,
+  tone = "default",
+}: {
+  label: string;
+  value: string | number;
+  tone?: string;
+}) {
   return (
     <div className="panel-card p-4">
-      <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">{label}</p>
-      <p className={`mt-1 font-display text-2xl font-bold ${tone === "danger" ? "text-danger" : tone === "success" ? "text-success" : "text-primary"}`}>
+      <p className="text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={`mt-1 font-display text-2xl font-bold ${tone === "danger" ? "text-danger" : tone === "success" ? "text-success" : "text-primary"}`}
+      >
         {value}
       </p>
     </div>

@@ -37,7 +37,7 @@ export interface AIPriorityItem {
 export class AIPriorityEngine {
   static calculatePriorityScore(
     task: MaintenanceTask,
-    affectedTrains: Train[] = []
+    affectedTrains: Train[] = [],
   ): AIPriorityScore {
     // Factor weights (sum = 100)
     const weights = {
@@ -141,7 +141,8 @@ export class AIPriorityEngine {
 
   private static getDelayImpact(task: MaintenanceTask, affectedTrains: Train[]): number {
     if (affectedTrains.length === 0) return 2;
-    const avgPriority = affectedTrains.reduce((sum, t) => sum + t.priority, 0) / affectedTrains.length;
+    const avgPriority =
+      affectedTrains.reduce((sum, t) => sum + t.priority, 0) / affectedTrains.length;
     if (avgPriority <= 2) return 10;
     if (avgPriority <= 3) return 7;
     return 4;
@@ -192,7 +193,7 @@ export class AIPriorityEngine {
   private static generateReason(
     task: MaintenanceTask,
     factors: AIPriorityScore["factors"],
-    score: number
+    score: number,
   ): string {
     const reasons: string[] = [];
 
@@ -210,7 +211,7 @@ export class AIPriorityEngine {
   private static generateRecommendation(
     level: "P1" | "P2" | "P3" | "P4",
     task: MaintenanceTask,
-    factors: AIPriorityScore["factors"]
+    factors: AIPriorityScore["factors"],
   ): string {
     if (level === "P1") {
       return `Immediately notify Station Master and ${task.department} Department. Evaluate operational restriction according to authorized railway procedures.`;
@@ -235,7 +236,10 @@ export class AIPriorityEngine {
       priority: "P1",
       description: "Signal S-204 abnormal while train approaching",
       system: "SMMS",
-      score: this.calculatePriorityScore(TASKS.find((t) => t.id === "SNT-202")!, TRAINS.slice(0, 3)),
+      score: this.calculatePriorityScore(
+        TASKS.find((t) => t.id === "SNT-202")!,
+        TRAINS.slice(0, 3),
+      ),
       affectedTrains: 3,
       timestamp: new Date().toISOString(),
     });
@@ -246,7 +250,10 @@ export class AIPriorityEngine {
       priority: "P1",
       description: "Track geometry abnormality on high-speed route",
       system: "TMS",
-      score: this.calculatePriorityScore(TASKS.find((t) => t.id === "ENG-101")!, TRAINS.slice(2, 7)),
+      score: this.calculatePriorityScore(
+        TASKS.find((t) => t.id === "ENG-101")!,
+        TRAINS.slice(2, 7),
+      ),
       affectedTrains: 5,
       timestamp: new Date().toISOString(),
     });
@@ -257,7 +264,10 @@ export class AIPriorityEngine {
       priority: "P2",
       description: "OHE inspection overdue on the Lasur–Jalna section",
       system: "TDMS",
-      score: this.calculatePriorityScore(TASKS.find((t) => t.id === "TRD-304")!, []),
+      score: this.calculatePriorityScore(
+        TASKS.find((t) => t.id === "TRD-304")!,
+        [],
+      ),
       affectedTrains: 0,
       timestamp: new Date().toISOString(),
     });
@@ -268,7 +278,10 @@ export class AIPriorityEngine {
       priority: "P2",
       description: "Track geometry warning on the Jalna–Parbhani Jn section",
       system: "TMS",
-      score: this.calculatePriorityScore(TASKS.find((t) => t.id === "ENG-107")!, TRAINS.slice(4, 6)),
+      score: this.calculatePriorityScore(
+        TASKS.find((t) => t.id === "ENG-107")!,
+        TRAINS.slice(4, 6),
+      ),
       affectedTrains: 2,
       timestamp: new Date().toISOString(),
     });
@@ -279,7 +292,10 @@ export class AIPriorityEngine {
       priority: "P3",
       description: "Routine maintenance due on signal equipment",
       system: "SMMS",
-      score: this.calculatePriorityScore(TASKS.find((t) => t.id === "SNT-209")!, []),
+      score: this.calculatePriorityScore(
+        TASKS.find((t) => t.id === "SNT-209")!,
+        [],
+      ),
       affectedTrains: 0,
       timestamp: new Date().toISOString(),
     });
@@ -290,7 +306,10 @@ export class AIPriorityEngine {
       priority: "P4",
       description: "Administrative work order processing",
       system: "Station",
-      score: this.calculatePriorityScore(TASKS.find((t) => t.id === "ENG-110")!, []),
+      score: this.calculatePriorityScore(
+        TASKS.find((t) => t.id === "ENG-110")!,
+        [],
+      ),
       affectedTrains: 0,
       timestamp: new Date().toISOString(),
     });

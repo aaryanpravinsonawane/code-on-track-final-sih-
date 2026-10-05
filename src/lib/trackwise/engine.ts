@@ -107,7 +107,10 @@ export const localEngine: OptimizationEngine = {
         );
         if (win.end - lastTrainEnd < 45) {
           pool.forEach((t) =>
-            addReject(t.id, `✗ Train conflict in ${win.label} (${conflicts.map((c) => c.id).join(", ")})`),
+            addReject(
+              t.id,
+              `✗ Train conflict in ${win.label} (${conflicts.map((c) => c.id).join(", ")})`,
+            ),
           );
           continue;
         }
@@ -140,7 +143,9 @@ export const localEngine: OptimizationEngine = {
       const departments = [...new Set(picked.map((p) => p.department))];
 
       const reasons = [
-        conflicts.length ? "✓ Rescheduled clear of train movement" : "✓ No train conflict in window",
+        conflicts.length
+          ? "✓ Rescheduled clear of train movement"
+          : "✓ No train conflict in window",
         `✓ ${picked.filter((p) => priorityBand(p) === "High").length} high-priority task(s) cleared`,
         "✓ Required crew and machinery available",
         departments.length > 1

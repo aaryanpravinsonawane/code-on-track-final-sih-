@@ -21,7 +21,8 @@ export const Route = createFileRoute("/simulator")({
       { property: "og:title", content: "What-If Delay Simulator — CODEONTRACK" },
       {
         property: "og:description",
-        content: "Delay injection, conflict detection and simulated re-optimization of block plans.",
+        content:
+          "Delay injection, conflict detection and simulated re-optimization of block plans.",
       },
     ],
   }),
@@ -65,7 +66,8 @@ function SimulatorPage() {
   };
 
   const beforeBlocks = plan?.blocks ?? [];
-  const sel = "rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring";
+  const sel =
+    "rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring";
 
   return (
     <MainShell
@@ -82,7 +84,11 @@ function SimulatorPage() {
           </label>
           <label className="text-xs text-muted-foreground">
             Affected train
-            <select value={trainId} onChange={(e) => setTrainId(e.target.value)} className={`mt-1 block ${sel}`}>
+            <select
+              value={trainId}
+              onChange={(e) => setTrainId(e.target.value)}
+              className={`mt-1 block ${sel}`}
+            >
               {TRAINS.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.id} — {t.name} ({t.section})
@@ -98,7 +104,9 @@ function SimulatorPage() {
                   key={d}
                   onClick={() => setDelay(d)}
                   className={`rounded-md border px-3 py-2 text-sm font-semibold ${
-                    delay === d ? "border-primary bg-primary text-primary-foreground" : "border-input bg-background"
+                    delay === d
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-input bg-background"
                   }`}
                 >
                   +{d} minutes
@@ -116,8 +124,9 @@ function SimulatorPage() {
           </button>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          Original path: {train.id} occupies {train.section} {fmt(train.arrival)}–{fmt(train.departure)}. With
-          +{delay} min the path shifts to {fmt(train.arrival + delay)}–{fmt(train.departure + delay)}.
+          Original path: {train.id} occupies {train.section} {fmt(train.arrival)}–
+          {fmt(train.departure)}. With +{delay} min the path shifts to {fmt(train.arrival + delay)}–
+          {fmt(train.departure + delay)}.
         </p>
       </Panel>
 
@@ -126,12 +135,13 @@ function SimulatorPage() {
           {impacted.length > 0 ? (
             <div className="mb-4 flex items-center gap-2 rounded-md border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
               <TriangleAlert className="size-4" />
-              Conflict detected — delayed {train.id} now fouls block(s) {impacted.join(", ")}. Re-optimization
-              executed.
+              Conflict detected — delayed {train.id} now fouls block(s) {impacted.join(", ")}.
+              Re-optimization executed.
             </div>
           ) : (
             <div className="mb-4 rounded-md border border-success/40 bg-success/10 px-4 py-3 text-sm text-success">
-              No block conflict from this delay — the plan remains feasible, re-optimization confirms it.
+              No block conflict from this delay — the plan remains feasible, re-optimization
+              confirms it.
             </div>
           )}
 
@@ -160,7 +170,20 @@ function SimulatorPage() {
   );
 }
 
-function BlockList({ blocks, highlight = [] }: { blocks: { id: string; section: string; start: number; end: number; taskIds: string[]; utilization: number }[]; highlight?: string[] }) {
+function BlockList({
+  blocks,
+  highlight = [],
+}: {
+  blocks: {
+    id: string;
+    section: string;
+    start: number;
+    end: number;
+    taskIds: string[];
+    utilization: number;
+  }[];
+  highlight?: string[];
+}) {
   if (!blocks.length)
     return <p className="text-sm text-muted-foreground">No plan available — generate one first.</p>;
   return (

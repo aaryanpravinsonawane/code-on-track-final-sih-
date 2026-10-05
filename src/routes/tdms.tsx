@@ -243,7 +243,9 @@ function TDMSDashboard() {
           </table>
         </div>
       </Panel>
-      <div className="mt-4"><BlockWorkflowTable /></div>
+      <div className="mt-4">
+        <BlockWorkflowTable />
+      </div>
     </MainShell>
   );
 }

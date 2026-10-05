@@ -30,7 +30,13 @@ const MOCK_USERS: User[] = [
     department: "System Administration",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_all", "approve_plans", "manage_users", "view_analytics", "manage_integrations"],
+    permissions: [
+      "view_all",
+      "approve_plans",
+      "manage_users",
+      "view_analytics",
+      "manage_integrations",
+    ],
   },
   {
     id: "USR-002",
@@ -40,7 +46,13 @@ const MOCK_USERS: User[] = [
     department: "Operations",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_station", "approve_station_plans", "manage_maintenance", "view_analytics", "report_incidents"],
+    permissions: [
+      "view_station",
+      "approve_station_plans",
+      "manage_maintenance",
+      "view_analytics",
+      "report_incidents",
+    ],
   },
   {
     id: "USR-003",
@@ -60,7 +72,12 @@ const MOCK_USERS: User[] = [
     department: "Signal & Telecommunication",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_smms", "manage_signal_maintenance", "create_work_orders", "report_incidents"],
+    permissions: [
+      "view_smms",
+      "manage_signal_maintenance",
+      "create_work_orders",
+      "report_incidents",
+    ],
   },
   {
     id: "USR-005",
@@ -70,7 +87,12 @@ const MOCK_USERS: User[] = [
     department: "Traction Distribution",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_tdms", "manage_traction_maintenance", "create_work_orders", "view_analytics"],
+    permissions: [
+      "view_tdms",
+      "manage_traction_maintenance",
+      "create_work_orders",
+      "view_analytics",
+    ],
   },
   {
     id: "USR-006",
@@ -80,7 +102,13 @@ const MOCK_USERS: User[] = [
     department: "Operations",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_coa", "manage_train_movement", "create_caution_orders", "view_ai", "view_analytics"],
+    permissions: [
+      "view_coa",
+      "manage_train_movement",
+      "create_caution_orders",
+      "view_ai",
+      "view_analytics",
+    ],
   },
   {
     id: "USR-007",
@@ -100,7 +128,14 @@ const MOCK_USERS: User[] = [
     department: "Integrated Maintenance",
     station: "NDG",
     division: "Central Division",
-    permissions: ["view_tms", "view_smms", "view_tdms", "create_work_orders", "manage_maintenance", "view_ai"],
+    permissions: [
+      "view_tms",
+      "view_smms",
+      "view_tdms",
+      "create_work_orders",
+      "manage_maintenance",
+      "view_ai",
+    ],
   },
 ];
 
@@ -125,7 +160,7 @@ export function hasPermission(user: User | null, permission: string): boolean {
 
 export function canAccessModule(user: User | null, module: string): boolean {
   if (!user) return false;
-  
+
   const modulePermissions: Record<string, string[]> = {
     management: ["view_all"],
     station_master: ["view_station", "view_all"],

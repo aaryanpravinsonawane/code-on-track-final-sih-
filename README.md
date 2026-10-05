@@ -380,27 +380,34 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
 ### Frontend
+
 - React (Vite) — fast dev/build tooling
 - TailwindCSS — for rapid dashboard/grid UI development
 - Recharts — Gantt-style block schedule and KPI visualizations
 - Socket.io-client / Supabase Realtime — live operations feed
 
 ### Backend
+
 - FastAPI (Python) — core API layer, hosts the AI/ML scheduling logic
 - scikit-learn / OR-Tools (Google) — the actual optimizer; OR-Tools handles constraint-based scheduling (block allocation, conflict resolution)
 - Pandas — processing simulated TMS/SMMS/TDMS data
 
 ### Database
+
 - Supabase (Postgres) — built-in auth, realtime, and storage
 
 ### Deployment
+
 - Frontend: Vercel
 - Backend: Railway or Render (easy free-tier FastAPI deployment)
 
 ### Tooling
+
 - Swagger / Postman — auto-generated API docs (via FastAPI) for demos
 - GitHub + README with architecture diagram
 
 ---
+
 Summary: FastAPI + OR-Tools backend, React + Tailwind frontend, and Supabase for the database cover the full stack.

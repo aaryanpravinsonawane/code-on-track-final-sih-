@@ -105,7 +105,9 @@ function NetworkPage() {
       {(secDetail || staDetail) && (
         <div className="mt-4">
           <Panel
-            title={secDetail ? `Section ${secDetail.section.id}` : `Station ${staDetail!.station.code}`}
+            title={
+              secDetail ? `Section ${secDetail.section.id}` : `Station ${staDetail!.station.code}`
+            }
             right={
               <button
                 type="button"
@@ -198,7 +200,9 @@ function NetworkPage() {
                             <tr key={t.id} className="hover:bg-accent/60">
                               <td className="px-2 py-1.5 font-mono text-xs">{t.id}</td>
                               <td className="px-2 py-1.5">{t.name}</td>
-                              <td className="px-2 py-1.5 text-xs text-muted-foreground">{t.type}</td>
+                              <td className="px-2 py-1.5 text-xs text-muted-foreground">
+                                {t.type}
+                              </td>
                               <td className="px-2 py-1.5 font-mono text-xs">
                                 {fmt(t.arrival)}–{fmt(t.departure)}
                               </td>

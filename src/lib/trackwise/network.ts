@@ -58,7 +58,8 @@ export const conflictsInSection = (id: SectionId): number =>
     .length;
 
 export const sectionStatus = (id: SectionId, blocks: BlockPlan[] = []): SectionStatus => {
-  if (conflictsInSection(id) > 0 && blocksInSection(id, blocks).length > 0) return "Conflict Detected";
+  if (conflictsInSection(id) > 0 && blocksInSection(id, blocks).length > 0)
+    return "Conflict Detected";
   if (blocksInSection(id, blocks).length > 0) return "Block Planned";
   const highPriority = tasksInSection(id).filter((t) => priorityBand(t) === "High").length;
   if (highPriority >= 3 || getSection(id)?.maintenanceStatus === "Overdue")
@@ -98,7 +99,10 @@ export interface SectionSummary {
   status: SectionStatus;
 }
 
-export const sectionSummary = (id: SectionId, blocks: BlockPlan[] = []): SectionSummary | undefined => {
+export const sectionSummary = (
+  id: SectionId,
+  blocks: BlockPlan[] = [],
+): SectionSummary | undefined => {
   const section = getSection(id);
   if (!section) return undefined;
   return {
@@ -124,9 +128,15 @@ export const validateNetwork = () => {
     if (!codes.has(s.destinationStation))
       issues.push(`${s.id}: unknown destination ${s.destinationStation}`);
   });
-  TRAINS.forEach((t) => !ids.has(t.section) && issues.push(`Train ${t.id}: bad section ${t.section}`));
-  TASKS.forEach((t) => !ids.has(t.section) && issues.push(`Task ${t.id}: bad section ${t.section}`));
-  WINDOWS.forEach((w) => !ids.has(w.section) && issues.push(`Window ${w.id}: bad section ${w.section}`));
+  TRAINS.forEach(
+    (t) => !ids.has(t.section) && issues.push(`Train ${t.id}: bad section ${t.section}`),
+  );
+  TASKS.forEach(
+    (t) => !ids.has(t.section) && issues.push(`Task ${t.id}: bad section ${t.section}`),
+  );
+  WINDOWS.forEach(
+    (w) => !ids.has(w.section) && issues.push(`Window ${w.id}: bad section ${w.section}`),
+  );
 
   return {
     ok: issues.length === 0,
