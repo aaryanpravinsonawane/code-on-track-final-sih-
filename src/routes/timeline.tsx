@@ -34,7 +34,8 @@ function TimelinePage() {
         <GanttChart blocks={plan?.blocks ?? []} delays={delays} />
         {!plan && (
           <p className="mt-4 rounded-md border border-warn/40 bg-warn/10 px-3 py-2 text-xs text-warn-foreground">
-            No optimized plan loaded yet — run the AI Block Planner to populate the maintenance block lane.
+            No optimized plan loaded yet — run the AI Block Planner to populate the maintenance
+            block lane.
           </p>
         )}
       </Panel>

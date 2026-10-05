@@ -57,7 +57,10 @@ export function GanttChart({
                       key={t.id}
                       title={`${t.id} ${t.name} · ${fmt(occ.start)}–${fmt(occ.end)}${delayed ? ` (+${delays[t.id]} min)` : ""}`}
                       className={`absolute top-1.5 h-5 rounded-sm ${TRAIN_TONE[t.type]} ${delayed ? "ring-2 ring-danger" : ""} overflow-hidden text-[9px] leading-5 text-primary-foreground`}
-                      style={{ left: `${pct(occ.start)}%`, width: `${Math.max(1.2, pct(occ.end) - pct(occ.start))}%` }}
+                      style={{
+                        left: `${pct(occ.start)}%`,
+                        width: `${Math.max(1.2, pct(occ.end) - pct(occ.start))}%`,
+                      }}
                     >
                       <span className="px-1 font-mono">{t.id}</span>
                     </div>
@@ -92,7 +95,10 @@ export function GanttChart({
                       key={b.id}
                       title={`${b.id} · ${fmt(b.start)}–${fmt(b.end)} · ${b.taskIds.length} tasks`}
                       className={`absolute top-1 flex h-6 overflow-hidden rounded-sm border ${conflicts.length ? "border-danger ring-2 ring-danger/50" : "border-primary/50"}`}
-                      style={{ left: `${pct(b.start)}%`, width: `${Math.max(2, pct(b.end) - pct(b.start))}%` }}
+                      style={{
+                        left: `${pct(b.start)}%`,
+                        width: `${Math.max(2, pct(b.end) - pct(b.start))}%`,
+                      }}
                     >
                       {depts.map((t, i) => (
                         <span key={i} className={`h-full flex-1 ${DEPT_BAR[t.department]}`} />

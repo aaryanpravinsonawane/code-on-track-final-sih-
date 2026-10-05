@@ -70,9 +70,7 @@ interface TrackwiseState {
     id: string,
     changes: { status?: ResolutionIssue["status"]; assigned_department?: string },
   ) => Promise<void>;
-  submitFieldReport: (
-    input: FieldReportInput,
-  ) => Promise<{
+  submitFieldReport: (input: FieldReportInput) => Promise<{
     report: FieldReport;
     issue: ResolutionIssue;
     schedule_impact: BlockOptimizationResult;

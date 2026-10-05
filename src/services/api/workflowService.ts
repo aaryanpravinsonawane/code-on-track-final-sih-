@@ -69,9 +69,14 @@ export const workflowService = {
   optimize: () =>
     api.post<BlockOptimizationResult>("/workflow/optimize").then((response) => response.data),
   submitFieldReport: (report: FieldReportInput) =>
-    api.post<FieldReportResponse>("/workflow/field-reports", report).then((response) => response.data),
+    api
+      .post<FieldReportResponse>("/workflow/field-reports", report)
+      .then((response) => response.data),
   audit: () => api.get<WorkflowAuditEvent[]>("/workflow/audit").then((response) => response.data),
-  verifyAudit: () => api.get<{ valid: boolean; verified_events: number }>("/workflow/audit/verify").then((response) => response.data),
+  verifyAudit: () =>
+    api
+      .get<{ valid: boolean; verified_events: number }>("/workflow/audit/verify")
+      .then((response) => response.data),
   login: (employeeId: string, password: string, role: Role) =>
     api
       .post<WorkflowLoginResponse>("/auth/token", { username: employeeId, password, role })

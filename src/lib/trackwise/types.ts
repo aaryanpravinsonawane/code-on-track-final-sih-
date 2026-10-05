@@ -24,10 +24,7 @@ export type OperationalStatus = "Operational" | "Restricted" | "Suspended";
 
 /** Derived, display-level status of a section on the simulated corridor. */
 export type SectionStatus =
-  | "Operational"
-  | "Maintenance Pending"
-  | "Block Planned"
-  | "Conflict Detected";
+  "Operational" | "Maintenance Pending" | "Block Planned" | "Conflict Detected";
 
 export type MaintenanceStatus = "Up to date" | "Pending" | "Overdue";
 

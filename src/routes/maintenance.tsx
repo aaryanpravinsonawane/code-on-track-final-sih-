@@ -18,7 +18,8 @@ export const Route = createFileRoute("/maintenance")({
       { property: "og:title", content: "Maintenance Register — CODEONTRACK" },
       {
         property: "og:description",
-        content: "Simulated maintenance task register with department, priority and section filters.",
+        content:
+          "Simulated maintenance task register with department, priority and section filters.",
       },
     ],
   }),
@@ -103,7 +104,10 @@ function MaintenancePage() {
             </thead>
             <tbody>
               {rows.map((t) => (
-                <tr key={t.id} className="border-b border-border/60 last:border-0 hover:bg-accent/40">
+                <tr
+                  key={t.id}
+                  className="border-b border-border/60 last:border-0 hover:bg-accent/40"
+                >
                   <td className="py-2.5 pr-3 font-mono text-xs font-semibold">{t.id}</td>
                   <td className="py-2.5 pr-3">
                     <DeptTag dept={t.department} />

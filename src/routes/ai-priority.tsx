@@ -41,8 +41,20 @@ export function AIPriorityQueue() {
     >
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
-        <KpiCard label="P1 — CRITICAL" value={p1Count} icon={AlertTriangle} tone="danger" hint="Immediate action required" />
-        <KpiCard label="P2 — HIGH" value={p2Count} icon={Zap} tone="warn" hint="High priority attention" />
+        <KpiCard
+          label="P1 — CRITICAL"
+          value={p1Count}
+          icon={AlertTriangle}
+          tone="danger"
+          hint="Immediate action required"
+        />
+        <KpiCard
+          label="P2 — HIGH"
+          value={p2Count}
+          icon={Zap}
+          tone="warn"
+          hint="High priority attention"
+        />
         <KpiCard label="P3 — MEDIUM" value={p3Count} icon={Clock} hint="Standard priority" />
         <KpiCard label="P4 — LOW" value={p4Count} icon={ShieldCheck} hint="Low priority" />
       </div>
@@ -83,12 +95,12 @@ export function AIPriorityQueue() {
                     selectedItem?.id === item.id
                       ? "bg-primary/10 border-primary"
                       : item.priority === "P1"
-                      ? "bg-destructive/10 border-destructive/20 hover:bg-destructive/20"
-                      : item.priority === "P2"
-                      ? "bg-warn/10 border-warn/20 hover:bg-warn/20"
-                      : item.priority === "P3"
-                      ? "bg-panel-muted border-border hover:bg-panel-muted/80"
-                      : "bg-panel-muted border-border hover:bg-panel-muted/80"
+                        ? "bg-destructive/10 border-destructive/20 hover:bg-destructive/20"
+                        : item.priority === "P2"
+                          ? "bg-warn/10 border-warn/20 hover:bg-warn/20"
+                          : item.priority === "P3"
+                            ? "bg-panel-muted border-border hover:bg-panel-muted/80"
+                            : "bg-panel-muted border-border hover:bg-panel-muted/80"
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -99,10 +111,10 @@ export function AIPriorityQueue() {
                             item.priority === "P1"
                               ? "bg-destructive text-destructive-foreground"
                               : item.priority === "P2"
-                              ? "bg-warn text-warn-foreground"
-                              : item.priority === "P3"
-                              ? "bg-primary/20 text-primary"
-                              : "bg-muted-foreground text-muted-foreground"
+                                ? "bg-warn text-warn-foreground"
+                                : item.priority === "P3"
+                                  ? "bg-primary/20 text-primary"
+                                  : "bg-muted-foreground text-muted-foreground"
                           }`}
                         >
                           {item.priority}
@@ -150,17 +162,26 @@ export function AIPriorityQueue() {
                 <div>
                   <p className="text-xs text-muted-foreground mb-2">Priority Score</p>
                   <div className="flex items-center gap-3">
-                    <p className="text-3xl font-bold text-foreground">{selectedItem.score.score}/100</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      {selectedItem.score.score}/100
+                    </p>
                     <span
                       className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${
                         selectedItem.priority === "P1"
                           ? "bg-destructive/10 text-destructive"
                           : selectedItem.priority === "P2"
-                          ? "bg-warn/10 text-warn-foreground"
-                          : "bg-emerald-500/10 text-emerald-500"
+                            ? "bg-warn/10 text-warn-foreground"
+                            : "bg-emerald-500/10 text-emerald-500"
                       }`}
                     >
-                      {selectedItem.priority} — {selectedItem.priority === "P1" ? "CRITICAL" : selectedItem.priority === "P2" ? "HIGH" : selectedItem.priority === "P3" ? "MEDIUM" : "LOW"}
+                      {selectedItem.priority} —{" "}
+                      {selectedItem.priority === "P1"
+                        ? "CRITICAL"
+                        : selectedItem.priority === "P2"
+                          ? "HIGH"
+                          : selectedItem.priority === "P3"
+                            ? "MEDIUM"
+                            : "LOW"}
                     </span>
                   </div>
                 </div>
@@ -174,7 +195,9 @@ export function AIPriorityQueue() {
                         style={{ width: `${selectedItem.score.confidence}%` }}
                       />
                     </div>
-                    <span className="text-sm font-semibold text-foreground">{selectedItem.score.confidence}%</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {selectedItem.score.confidence}%
+                    </span>
                   </div>
                 </div>
 
@@ -183,11 +206,17 @@ export function AIPriorityQueue() {
                   <div className="space-y-2">
                     {Object.entries(selectedItem.score.factors).map(([key, value]) => (
                       <div key={key} className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-28 capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
+                        <span className="text-xs text-muted-foreground w-28 capitalize">
+                          {key.replace(/([A-Z])/g, " $1")}
+                        </span>
                         <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                           <div
                             className={`h-full transition-all ${
-                              value >= 8 ? "bg-destructive" : value >= 5 ? "bg-warn" : "bg-emerald-500"
+                              value >= 8
+                                ? "bg-destructive"
+                                : value >= 5
+                                  ? "bg-warn"
+                                  : "bg-emerald-500"
                             }`}
                             style={{ width: `${value * 10}%` }}
                           />
@@ -201,7 +230,9 @@ export function AIPriorityQueue() {
                 <div className="p-4 bg-warn/10 border border-warn/20 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="size-4 text-warn-foreground" />
-                    <span className="text-xs font-semibold text-warn-foreground">Suggested Action</span>
+                    <span className="text-xs font-semibold text-warn-foreground">
+                      Suggested Action
+                    </span>
                   </div>
                   <p className="text-sm text-foreground">{selectedItem.score.recommendedAction}</p>
                 </div>

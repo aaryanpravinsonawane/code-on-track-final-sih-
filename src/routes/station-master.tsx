@@ -26,7 +26,9 @@ function StationMasterDashboard() {
         <TrainScheduleGantt />
       </div>
       <StationOperationsPage mode="master" />
-      <div className="mt-4"><BlockWorkflowTable /></div>
+      <div className="mt-4">
+        <BlockWorkflowTable />
+      </div>
     </MainShell>
   );
 }

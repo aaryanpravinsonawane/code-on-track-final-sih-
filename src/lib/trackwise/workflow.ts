@@ -149,23 +149,205 @@ export interface WorkflowSnapshot {
 export const DEMO_WORKFLOW: WorkflowSnapshot = {
   demo_mode: true,
   block_requests: [
-    { id: "BLK-ENG-014", title: "Rail weld inspection", department: "Engineering", section: "S1", track: "UP-MAIN", window_start: 780, window_end: 900, duration_minutes: 60, resources: ["Track Gang A"], urgency: 9, priority: 5, tsr_required: true, bundle_key: "S1-UP-MAIN-DAY", requested_by: "TMS-001", status: "Draft", replan_required: false },
-    { id: "BLK-SNT-021", title: "Track circuit relay replacement", department: "S&T", section: "S2", track: "DN-MAIN", window_start: 750, window_end: 870, duration_minutes: 60, resources: ["Signal Crew 1"], urgency: 8, priority: 4, tsr_required: false, bundle_key: "S2-DN-MAIN-DAY", requested_by: "SMMS-001", status: "Submitted", replan_required: false },
-    { id: "BLK-TRD-008", title: "OHE contact wire check", department: "TRD", section: "S1", track: "UP-MAIN", window_start: 780, window_end: 900, duration_minutes: 45, resources: ["Tower Wagon", "OHE Crew A"], urgency: 7, priority: 4, tsr_required: true, bundle_key: "S1-UP-MAIN-DAY", requested_by: "TDMS-001", status: "AI Validated", replan_required: false },
-    { id: "BLK-ENG-011", title: "Turnout renewal Pt 12A", department: "Engineering", section: "S1", track: "UP-MAIN", window_start: 990, window_end: 1080, duration_minutes: 75, resources: ["Track Gang B", "Crane"], urgency: 10, priority: 5, tsr_required: true, bundle_key: "S1-UP-MAIN-EVE", requested_by: "TMS-001", status: "Pending Control Review", replan_required: false },
-    { id: "BLK-SNT-019", title: "Signal lamp renewal", department: "S&T", section: "S3", track: "LOOP-1", window_start: 795, window_end: 915, duration_minutes: 45, resources: ["Signal Crew 2"], urgency: 6, priority: 3, tsr_required: false, bundle_key: "S3-LOOP-1-DAY", requested_by: "SMMS-001", status: "Sanctioned", replan_required: false },
-    { id: "BLK-TRD-004", title: "Feeder isolation inspection", department: "TRD", section: "S2", track: "DN-MAIN", window_start: 1020, window_end: 1140, duration_minutes: 60, resources: ["OHE Crew B"], urgency: 5, priority: 3, tsr_required: false, bundle_key: "S2-DN-MAIN-EVE", requested_by: "TDMS-001", status: "Rejected", replan_required: false },
-    { id: "BLK-ENG-017", title: "Ballast screening", department: "Engineering", section: "S3", track: "UP-MAIN", window_start: 1320, window_end: 1440, duration_minutes: 90, resources: ["Tamping Machine", "Track Gang A"], urgency: 8, priority: 4, tsr_required: true, bundle_key: "S3-UP-MAIN-NIGHT", requested_by: "TMS-001", status: "In Progress", replan_required: false },
+    {
+      id: "BLK-ENG-014",
+      title: "Rail weld inspection",
+      department: "Engineering",
+      section: "S1",
+      track: "UP-MAIN",
+      window_start: 780,
+      window_end: 900,
+      duration_minutes: 60,
+      resources: ["Track Gang A"],
+      urgency: 9,
+      priority: 5,
+      tsr_required: true,
+      bundle_key: "S1-UP-MAIN-DAY",
+      requested_by: "TMS-001",
+      status: "Draft",
+      replan_required: false,
+    },
+    {
+      id: "BLK-SNT-021",
+      title: "Track circuit relay replacement",
+      department: "S&T",
+      section: "S2",
+      track: "DN-MAIN",
+      window_start: 750,
+      window_end: 870,
+      duration_minutes: 60,
+      resources: ["Signal Crew 1"],
+      urgency: 8,
+      priority: 4,
+      tsr_required: false,
+      bundle_key: "S2-DN-MAIN-DAY",
+      requested_by: "SMMS-001",
+      status: "Submitted",
+      replan_required: false,
+    },
+    {
+      id: "BLK-TRD-008",
+      title: "OHE contact wire check",
+      department: "TRD",
+      section: "S1",
+      track: "UP-MAIN",
+      window_start: 780,
+      window_end: 900,
+      duration_minutes: 45,
+      resources: ["Tower Wagon", "OHE Crew A"],
+      urgency: 7,
+      priority: 4,
+      tsr_required: true,
+      bundle_key: "S1-UP-MAIN-DAY",
+      requested_by: "TDMS-001",
+      status: "AI Validated",
+      replan_required: false,
+    },
+    {
+      id: "BLK-ENG-011",
+      title: "Turnout renewal Pt 12A",
+      department: "Engineering",
+      section: "S1",
+      track: "UP-MAIN",
+      window_start: 990,
+      window_end: 1080,
+      duration_minutes: 75,
+      resources: ["Track Gang B", "Crane"],
+      urgency: 10,
+      priority: 5,
+      tsr_required: true,
+      bundle_key: "S1-UP-MAIN-EVE",
+      requested_by: "TMS-001",
+      status: "Pending Control Review",
+      replan_required: false,
+    },
+    {
+      id: "BLK-SNT-019",
+      title: "Signal lamp renewal",
+      department: "S&T",
+      section: "S3",
+      track: "LOOP-1",
+      window_start: 795,
+      window_end: 915,
+      duration_minutes: 45,
+      resources: ["Signal Crew 2"],
+      urgency: 6,
+      priority: 3,
+      tsr_required: false,
+      bundle_key: "S3-LOOP-1-DAY",
+      requested_by: "SMMS-001",
+      status: "Sanctioned",
+      replan_required: false,
+    },
+    {
+      id: "BLK-TRD-004",
+      title: "Feeder isolation inspection",
+      department: "TRD",
+      section: "S2",
+      track: "DN-MAIN",
+      window_start: 1020,
+      window_end: 1140,
+      duration_minutes: 60,
+      resources: ["OHE Crew B"],
+      urgency: 5,
+      priority: 3,
+      tsr_required: false,
+      bundle_key: "S2-DN-MAIN-EVE",
+      requested_by: "TDMS-001",
+      status: "Rejected",
+      replan_required: false,
+    },
+    {
+      id: "BLK-ENG-017",
+      title: "Ballast screening",
+      department: "Engineering",
+      section: "S3",
+      track: "UP-MAIN",
+      window_start: 1320,
+      window_end: 1440,
+      duration_minutes: 90,
+      resources: ["Tamping Machine", "Track Gang A"],
+      urgency: 8,
+      priority: 4,
+      tsr_required: true,
+      bundle_key: "S3-UP-MAIN-NIGHT",
+      requested_by: "TMS-001",
+      status: "In Progress",
+      replan_required: false,
+    },
   ],
   issues: [
-    { id: "ISS-DEMO-101", source: "TMS", severity: "CRITICAL", location: "Nagarsol · KM 24/7", description: "Rail weld inspection is overdue; temporary speed restriction required for the simulated corridor.", created_at: "2026-09-30T07:10:00Z", status: "Open", assigned_department: "Engineering", recommended_action: "Review the S1 request and confirm the TSR plan." },
-    { id: "ISS-DEMO-102", source: "SMMS", severity: "HIGH", location: "Lasur · Track circuit TC-12", description: "Intermittent track circuit indication requires a signal crew inspection.", created_at: "2026-09-30T07:24:00Z", status: "Assigned", assigned_department: "S&T", recommended_action: "Confirm isolation and schedule a relay replacement." },
-    { id: "ISS-DEMO-103", source: "TDMS", severity: "MEDIUM", location: "Selu · OHE span 249/8", description: "Tower wagon availability is reduced for the next maintenance window.", created_at: "2026-09-30T07:40:00Z", status: "Open", assigned_department: "TRD", recommended_action: "Re-run the resource-feasible block schedule." },
-    { id: "ISS-DEMO-104", source: "Station Master", severity: "HIGH", location: "Parbhani Jn · Platform 2", description: "Simulated platform occupancy overlaps the proposed station work window.", created_at: "2026-09-30T07:56:00Z", status: "In Progress", assigned_department: "Operations", recommended_action: "Coordinate the window with the section controller." },
-    { id: "ISS-DEMO-105", source: "COA", severity: "LOW", location: "Central Control", description: "A draft request is awaiting controller review before approval.", created_at: "2026-09-30T08:03:00Z", status: "Open", assigned_department: "Operations", recommended_action: "Complete review and record the decision." },
+    {
+      id: "ISS-DEMO-101",
+      source: "TMS",
+      severity: "CRITICAL",
+      location: "Nagarsol · KM 24/7",
+      description:
+        "Rail weld inspection is overdue; temporary speed restriction required for the simulated corridor.",
+      created_at: "2026-09-30T07:10:00Z",
+      status: "Open",
+      assigned_department: "Engineering",
+      recommended_action: "Review the S1 request and confirm the TSR plan.",
+    },
+    {
+      id: "ISS-DEMO-102",
+      source: "SMMS",
+      severity: "HIGH",
+      location: "Lasur · Track circuit TC-12",
+      description: "Intermittent track circuit indication requires a signal crew inspection.",
+      created_at: "2026-09-30T07:24:00Z",
+      status: "Assigned",
+      assigned_department: "S&T",
+      recommended_action: "Confirm isolation and schedule a relay replacement.",
+    },
+    {
+      id: "ISS-DEMO-103",
+      source: "TDMS",
+      severity: "MEDIUM",
+      location: "Selu · OHE span 249/8",
+      description: "Tower wagon availability is reduced for the next maintenance window.",
+      created_at: "2026-09-30T07:40:00Z",
+      status: "Open",
+      assigned_department: "TRD",
+      recommended_action: "Re-run the resource-feasible block schedule.",
+    },
+    {
+      id: "ISS-DEMO-104",
+      source: "Station Master",
+      severity: "HIGH",
+      location: "Parbhani Jn · Platform 2",
+      description: "Simulated platform occupancy overlaps the proposed station work window.",
+      created_at: "2026-09-30T07:56:00Z",
+      status: "In Progress",
+      assigned_department: "Operations",
+      recommended_action: "Coordinate the window with the section controller.",
+    },
+    {
+      id: "ISS-DEMO-105",
+      source: "COA",
+      severity: "LOW",
+      location: "Central Control",
+      description: "A draft request is awaiting controller review before approval.",
+      created_at: "2026-09-30T08:03:00Z",
+      status: "Open",
+      assigned_department: "Operations",
+      recommended_action: "Complete review and record the decision.",
+    },
   ],
   field_reports: [
-    { id: "FLD-DEMO-001", event_type: "Machine Unavailable", asset: "TAMP-04", work_package_id: "WP-ENG-17", severity: "HIGH", event_time: "2026-09-30T06:45:00Z", remarks: "Tamping machine unavailable during pre-block inspection.", location: "Partur · KM 221/4", block_id: "BLK-ENG-017", reported_by: "MNT-001", received_at: "2026-09-30T06:47:00Z" },
+    {
+      id: "FLD-DEMO-001",
+      event_type: "Machine Unavailable",
+      asset: "TAMP-04",
+      work_package_id: "WP-ENG-17",
+      severity: "HIGH",
+      event_time: "2026-09-30T06:45:00Z",
+      remarks: "Tamping machine unavailable during pre-block inspection.",
+      location: "Partur · KM 221/4",
+      block_id: "BLK-ENG-017",
+      reported_by: "MNT-001",
+      received_at: "2026-09-30T06:47:00Z",
+    },
   ],
   audit: [],
   last_optimization: null,
@@ -185,7 +367,9 @@ const departmentRoles: Record<DepartmentName, Role[]> = {
 const controlRoles: Role[] = ["Admin", "Station Master", "COA Controller", "DRM"];
 
 export function canCreateBlock(role: Role, department: DepartmentName) {
-  return role === "Admin" || role === "Station Master" || departmentRoles[department].includes(role);
+  return (
+    role === "Admin" || role === "Station Master" || departmentRoles[department].includes(role)
+  );
 }
 
 export function canSubmitFieldReport(role: Role) {
@@ -193,7 +377,8 @@ export function canSubmitFieldReport(role: Role) {
 }
 
 export function canManageWorkflowIssue(issue: ResolutionIssue, role: Role) {
-  if (["Admin", "DRM", "Station Master", "COA Controller", "Maintenance Engineer"].includes(role)) return true;
+  if (["Admin", "DRM", "Station Master", "COA Controller", "Maintenance Engineer"].includes(role))
+    return true;
   return (
     (issue.source === "TMS" && role === "TMS Officer") ||
     (issue.source === "SMMS" && role === "SMMS Officer") ||
@@ -221,7 +406,11 @@ export function canTransitionBlock(block: BlockDemand, action: BlockAction, role
   }
   if (action === "dispatch") return ["Admin", "Station Master", "COA Controller"].includes(role);
   if (["submit", "resubmit"].includes(action)) {
-    return role === "Admin" || role === "Station Master" || departmentRoles[block.department].includes(role);
+    return (
+      role === "Admin" ||
+      role === "Station Master" ||
+      departmentRoles[block.department].includes(role)
+    );
   }
   if (["start", "complete"].includes(action)) {
     return role === "Admin" || departmentRoles[block.department].includes(role);
@@ -234,7 +423,12 @@ export function runDemoBlockOptimizer(
   trains: WorkflowSnapshot["train_paths"],
 ): BlockOptimizationResult {
   const active = requests
-    .filter((request) => request.status === "Submitted" || request.status === "AI Validated" || request.replan_required)
+    .filter(
+      (request) =>
+        request.status === "Submitted" ||
+        request.status === "AI Validated" ||
+        request.replan_required,
+    )
     .sort((a, b) => b.priority * 10 + b.urgency - (a.priority * 10 + a.urgency));
   const selected: Array<{ request: BlockDemand; start: number; end: number }> = [];
   const unscheduled: BlockOptimizationResult["unscheduled"] = [];
@@ -242,25 +436,34 @@ export function runDemoBlockOptimizer(
 
   for (const request of active) {
     let placement: { start: number; end: number } | undefined;
-    for (let start = request.window_start; start + request.duration_minutes <= request.window_end; start += 15) {
+    for (
+      let start = request.window_start;
+      start + request.duration_minutes <= request.window_end;
+      start += 15
+    ) {
       const end = start + request.duration_minutes;
       const blockedBy = trains.filter(
-        (train) => train.section === request.section && start < train.end + 10 && train.start - 10 < end,
+        (train) =>
+          train.section === request.section && start < train.end + 10 && train.start - 10 < end,
       );
-      blockedBy.forEach((train) => trainConflicts.push({ request_id: request.id, train_id: train.id }));
+      blockedBy.forEach((train) =>
+        trainConflicts.push({ request_id: request.id, train_id: train.id }),
+      );
       if (blockedBy.length) continue;
 
       const collides = selected.some((current) => {
         if (!(start < current.end && current.start < end)) return false;
-        const sharesResource = request.resources.some((resource) => current.request.resources.includes(resource));
+        const sharesResource = request.resources.some((resource) =>
+          current.request.resources.includes(resource),
+        );
         const canBundle = Boolean(
           start === current.start &&
-            request.bundle_key &&
-            request.bundle_key === current.request.bundle_key &&
-            request.section === current.request.section &&
-            request.track === current.request.track &&
-            request.department !== current.request.department &&
-            !sharesResource,
+          request.bundle_key &&
+          request.bundle_key === current.request.bundle_key &&
+          request.section === current.request.section &&
+          request.track === current.request.track &&
+          request.department !== current.request.department &&
+          !sharesResource,
         );
         return sharesResource || (request.section === current.request.section && !canBundle);
       });
@@ -270,7 +473,11 @@ export function runDemoBlockOptimizer(
       }
     }
     if (placement) selected.push({ request, ...placement });
-    else unscheduled.push({ request_id: request.id, reason: "No conflict-free slot in the simulated window." });
+    else
+      unscheduled.push({
+        request_id: request.id,
+        reason: "No conflict-free slot in the simulated window.",
+      });
   }
 
   const grouped = new Map<string, typeof selected>();
@@ -292,7 +499,9 @@ export function runDemoBlockOptimizer(
     };
   });
   const bundleByKey = new Map<string, string>();
-  [...grouped.entries()].forEach(([key], index) => bundleByKey.set(key, `DEMO-BND-${String(index + 1).padStart(3, "0")}`));
+  [...grouped.entries()].forEach(([key], index) =>
+    bundleByKey.set(key, `DEMO-BND-${String(index + 1).padStart(3, "0")}`),
+  );
   const schedule = selected.map((item) => {
     const groupKey = `${item.request.section}|${item.request.track}|${item.start}|${item.request.bundle_key ?? item.request.id}`;
     return {
@@ -305,11 +514,17 @@ export function runDemoBlockOptimizer(
       duration_minutes: item.request.duration_minutes,
       resources: item.request.resources,
       bundle_id: bundleByKey.get(groupKey) ?? "DEMO-BND-001",
-      reasons: ["Deterministic local demo heuristic; no CP-SAT solver was run.", "Train paths use a simulated 10-minute protection buffer."],
+      reasons: [
+        "Deterministic local demo heuristic; no CP-SAT solver was run.",
+        "Train paths use a simulated 10-minute protection buffer.",
+      ],
     };
   });
   const occupiedMinutes = bundles.reduce((total, item) => total + item.end - item.start, 0);
-  const resourceMinutes = schedule.reduce((total, item) => total + item.duration_minutes * Math.max(1, item.resources.length), 0);
+  const resourceMinutes = schedule.reduce(
+    (total, item) => total + item.duration_minutes * Math.max(1, item.resources.length),
+    0,
+  );
 
   return {
     solver_mode: "demo-heuristic",
@@ -317,12 +532,22 @@ export function runDemoBlockOptimizer(
     schedule,
     bundles,
     unscheduled,
-    conflicts: { overlapping_blocks: [], train_paths: trainConflicts, resources: [], impossible_windows: [] },
-    reasoning: ["DEMO MODE: this schedule is produced by a deterministic browser heuristic, not OR-Tools.", "The backend optimizer endpoint is required for actual CP-SAT results."],
+    conflicts: {
+      overlapping_blocks: [],
+      train_paths: trainConflicts,
+      resources: [],
+      impossible_windows: [],
+    },
+    reasoning: [
+      "DEMO MODE: this schedule is produced by a deterministic browser heuristic, not OR-Tools.",
+      "The backend optimizer endpoint is required for actual CP-SAT results.",
+    ],
     metrics: {
       scheduled: schedule.length,
       train_conflicts_avoided: trainConflicts.length,
-      resource_utilization: occupiedMinutes ? Math.round((resourceMinutes / occupiedMinutes) * 100) : 0,
+      resource_utilization: occupiedMinutes
+        ? Math.round((resourceMinutes / occupiedMinutes) * 100)
+        : 0,
     },
   };
 }
@@ -331,7 +556,7 @@ export function loadWorkflowSnapshot(): WorkflowSnapshot {
   if (typeof window === "undefined") return DEMO_WORKFLOW;
   try {
     const saved = window.localStorage.getItem("trackwise_workflow_v2");
-    return saved ? { ...DEMO_WORKFLOW, ...JSON.parse(saved) } as WorkflowSnapshot : DEMO_WORKFLOW;
+    return saved ? ({ ...DEMO_WORKFLOW, ...JSON.parse(saved) } as WorkflowSnapshot) : DEMO_WORKFLOW;
   } catch {
     window.localStorage.removeItem("trackwise_workflow_v2");
     return DEMO_WORKFLOW;

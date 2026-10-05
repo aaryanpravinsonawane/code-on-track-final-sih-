@@ -12,5 +12,8 @@ export type ScheduleRequest = {
 };
 
 export const schedulingService = {
-  recommend: (request: ScheduleRequest) => api.post<ScheduleRecommendation>("/scheduling/recommend", request).then((response) => response.data),
+  recommend: (request: ScheduleRequest) =>
+    api
+      .post<ScheduleRecommendation>("/scheduling/recommend", request)
+      .then((response) => response.data),
 };

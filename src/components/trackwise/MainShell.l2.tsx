@@ -52,10 +52,21 @@ const NAVIGATION: NavSection[] = [
     title: "COMMAND CENTER",
     items: [
       { to: "/", label: "Dashboard", icon: LayoutDashboard, module: "management" },
-      { to: "/live-operations", label: "Live Operations", icon: Activity, module: "station_master" },
+      {
+        to: "/live-operations",
+        label: "Live Operations",
+        icon: Activity,
+        module: "station_master",
+      },
       { to: "/station-map", label: "Station Map", icon: Map, module: "station_master" },
       { to: "/ai-priority", label: "AI Priority Queue", icon: Sparkles, module: "ai", badge: 3 },
-      { to: "/incidents", label: "Incidents", icon: AlertTriangle, module: "station_master", badge: 1 },
+      {
+        to: "/incidents",
+        label: "Incidents",
+        icon: AlertTriangle,
+        module: "station_master",
+        badge: 1,
+      },
       { to: "/alerts", label: "Alerts", icon: Bell, module: "station_master", badge: 5 },
       { to: "/analytics", label: "Analytics", icon: BarChart3, module: "analytics" },
     ],
@@ -75,7 +86,12 @@ const NAVIGATION: NavSection[] = [
       { to: "/tms", label: "TMS", icon: Wrench, module: "tms" },
       { to: "/tdms", label: "TDMS", icon: Gauge, module: "tdms" },
       { to: "/smms", label: "SMMS", icon: ShieldCheck, module: "smms" },
-      { to: "/maintenance-planner", label: "Maintenance Planner", icon: Sparkles, module: "engineering" },
+      {
+        to: "/maintenance-planner",
+        label: "Maintenance Planner",
+        icon: Sparkles,
+        module: "engineering",
+      },
       { to: "/work-orders", label: "Work Orders", icon: ClipboardList, module: "engineering" },
       { to: "/asset-health", label: "Asset Health", icon: BarChart3, module: "engineering" },
     ],
@@ -84,18 +100,43 @@ const NAVIGATION: NavSection[] = [
     title: "STATION",
     items: [
       { to: "/station-master", label: "Station Master", icon: Building2, module: "station_master" },
-      { to: "/platform-status", label: "Platform Status", icon: LayoutDashboard, module: "station_master" },
-      { to: "/track-occupancy", label: "Track Occupancy", icon: TrainFront, module: "station_master" },
+      {
+        to: "/platform-status",
+        label: "Platform Status",
+        icon: LayoutDashboard,
+        module: "station_master",
+      },
+      {
+        to: "/track-occupancy",
+        label: "Track Occupancy",
+        icon: TrainFront,
+        module: "station_master",
+      },
       { to: "/signal-status", label: "Signal Status", icon: ShieldCheck, module: "station_master" },
       { to: "/traction-status", label: "Traction Status", icon: Gauge, module: "station_master" },
-      { to: "/workstation-location", label: "Workstation Location", icon: Map, module: "station_master" },
+      {
+        to: "/workstation-location",
+        label: "Workstation Location",
+        icon: Map,
+        module: "station_master",
+      },
     ],
   },
   {
     title: "ANALYTICS",
     items: [
-      { to: "/operational-analytics", label: "Operational Analytics", icon: BarChart3, module: "analytics" },
-      { to: "/maintenance-analytics", label: "Maintenance Analytics", icon: BarChart3, module: "analytics" },
+      {
+        to: "/operational-analytics",
+        label: "Operational Analytics",
+        icon: BarChart3,
+        module: "analytics",
+      },
+      {
+        to: "/maintenance-analytics",
+        label: "Maintenance Analytics",
+        icon: BarChart3,
+        module: "analytics",
+      },
       { to: "/delay-analysis", label: "Delay Analysis", icon: Activity, module: "analytics" },
       { to: "/performance-kpi", label: "Performance KPIs", icon: Gauge, module: "analytics" },
       { to: "/reports", label: "Reports", icon: ClipboardList, module: "analytics" },
@@ -106,7 +147,12 @@ const NAVIGATION: NavSection[] = [
     items: [
       { to: "/ai-priority-engine", label: "AI Priority Engine", icon: Sparkles, module: "ai" },
       { to: "/ai-scheduling", label: "Optimized Scheduling", icon: Sparkles, module: "ai" },
-      { to: "/predictive-maintenance", label: "Predictive Maintenance", icon: Sparkles, module: "ai" },
+      {
+        to: "/predictive-maintenance",
+        label: "Predictive Maintenance",
+        icon: Sparkles,
+        module: "ai",
+      },
       { to: "/conflict-detection", label: "Conflict Detection", icon: AlertTriangle, module: "ai" },
       { to: "/what-if-simulation", label: "What-If Simulation", icon: Activity, module: "ai" },
     ],
@@ -124,7 +170,9 @@ export function MainShell({
 }) {
   const { user, setUser } = useTrackwise();
   const navigate = useNavigate();
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["COMMAND CENTER", "ENGINEERING"]));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["COMMAND CENTER", "ENGINEERING"]),
+  );
 
   const toggleSection = (sectionTitle: string) => {
     setExpandedSections((prev) => {
@@ -161,7 +209,9 @@ export function MainShell({
               <TrainFront className="size-5 text-primary-foreground" />
             </div>
             <div>
-              <p className="font-display text-lg font-bold tracking-[0.14em] text-primary">CODEONTRACK</p>
+              <p className="font-display text-lg font-bold tracking-[0.14em] text-primary">
+                CODEONTRACK
+              </p>
               <p className="text-[10px] text-muted-foreground tracking-wide">
                 INTEGRATED RAILWAY OPERATIONS
               </p>
@@ -172,8 +222,8 @@ export function MainShell({
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-2 space-y-1">
           {NAVIGATION.map((section) => {
-            const hasAccessibleItems = section.items.some((item) =>
-              !item.module || canAccessModule(user, item.module)
+            const hasAccessibleItems = section.items.some(
+              (item) => !item.module || canAccessModule(user, item.module),
             );
             if (!hasAccessibleItems) return null;
 
@@ -243,25 +293,35 @@ export function MainShell({
             {/* Left: Station & Division */}
             <div className="flex items-center gap-6">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Station</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  Station
+                </p>
                 <p className="text-sm font-semibold text-foreground">{user?.station || "NDG"}</p>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Division</p>
-                <p className="text-sm font-semibold text-foreground">{user?.division || "Central Division"}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  Division
+                </p>
+                <p className="text-sm font-semibold text-foreground">
+                  {user?.division || "Central Division"}
+                </p>
               </div>
             </div>
 
             {/* Center: Time & System Status */}
             <div className="flex items-center gap-6">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Current Time</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  Current Time
+                </p>
                 <p className="text-sm font-mono font-semibold text-foreground">{currentTime}</p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                 <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">System Status</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    System Status
+                  </p>
                   <p className="text-sm font-semibold text-emerald-500">ONLINE</p>
                 </div>
               </div>

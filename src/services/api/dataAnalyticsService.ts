@@ -18,6 +18,10 @@ export const dataAnalyticsService = {
   tms: () => api.get<AnalyticsModule>("/analytics/tms").then((response) => response.data),
   smms: () => api.get<AnalyticsModule>("/analytics/smms").then((response) => response.data),
   tdms: () => api.get<AnalyticsModule>("/analytics/tdms").then((response) => response.data),
-  summary: (period: "daily" | "weekly" | "monthly" = "daily") => api.get<AnalyticsSummary>(`/analytics/summary?period=${period}`).then((response) => response.data),
-  exportExcel: () => api.get<Blob>("/export/excel", { responseType: "blob" }).then((response) => response.data),
+  summary: (period: "daily" | "weekly" | "monthly" = "daily") =>
+    api
+      .get<AnalyticsSummary>(`/analytics/summary?period=${period}`)
+      .then((response) => response.data),
+  exportExcel: () =>
+    api.get<Blob>("/export/excel", { responseType: "blob" }).then((response) => response.data),
 };
