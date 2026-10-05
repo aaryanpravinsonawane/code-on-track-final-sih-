@@ -40,13 +40,13 @@ import { useLiveSimulation } from "@/lib/liveSimulation";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CodeOnTrack — Rail Command Center" },
+      { title: "CODEONTRACK — Rail Command Center" },
       {
         name: "description",
         content:
           "Integrated railway operations, maintenance & management dashboard with AI-powered prioritization and optimization.",
       },
-      { property: "og:title", content: "TRACKWISE — Railway Operations Command Center" },
+      { property: "og:title", content: "CODEONTRACK — Railway Operations Command Center" },
       {
         property: "og:description",
         content:

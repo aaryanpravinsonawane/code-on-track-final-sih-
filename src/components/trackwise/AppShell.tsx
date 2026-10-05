@@ -46,7 +46,7 @@ export function AppShell({
             </span>
             <div>
               <p className="font-display text-lg leading-none font-bold tracking-[0.14em] text-primary">
-                TRACKWISE
+                CODEONTRACK
               </p>
               <p className="mt-1 text-[11px] tracking-wide text-muted-foreground">
                 Railway Maintenance Block Planning · Decision Support
@@ -99,7 +99,7 @@ export function AppShell({
         </div>
         {children}
         <footer className="mt-10 border-t border-border pt-4 text-xs text-muted-foreground">
-          TRACKWISE is a prototype decision-support simulation. It does not control signals,
+          CODEONTRACK is a prototype decision-support simulation. It does not control signals,
           interlocking, Kavach, train movement or any safety-critical railway system. All figures
           are simulation results using representative data.
         </footer>

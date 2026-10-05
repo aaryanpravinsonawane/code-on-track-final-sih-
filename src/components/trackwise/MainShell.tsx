@@ -92,7 +92,12 @@ const NAVIGATION: NavSection[] = [
       { to: "/tdms", label: "TDMS", icon: Gauge, module: "tdms" },
       { to: "/smms", label: "SMMS", icon: ShieldCheck, module: "smms" },
       { to: "/work-orders", label: "Work Orders", icon: ClipboardList, module: "maintenance" },
-      { to: "/maintenance", label: "Maintenance Planning", icon: CalendarClock, module: "maintenance" },
+      {
+        to: "/maintenance",
+        label: "Maintenance Planning",
+        icon: CalendarClock,
+        module: "maintenance",
+      },
     ],
   },
   {
@@ -181,9 +186,7 @@ export function MainShell({
   const currentTime = useClock();
 
   return (
-    <div
-      className={`min-h-screen bg-background text-foreground flex ${isCommand ? "command-theme dark" : ""}`}
-    >
+    <div className="min-h-screen bg-background text-foreground flex command-theme dark">
       {/* Left Sidebar */}
       <div
         className={`fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm transition-opacity lg:hidden ${sidebarOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
@@ -206,8 +209,12 @@ export function MainShell({
               <p className="text-[9px] tracking-[0.14em] text-blue-200/70">RAIL COMMAND CENTER</p>
             </div>
           </div>
-          <div className={`mt-5 flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] font-semibold tracking-[0.12em] ${demoMode ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"}`}>
-            <span className={`size-1.5 rounded-full ${demoMode ? "bg-amber-400" : "animate-pulse bg-emerald-400"}`} />
+          <div
+            className={`mt-5 flex items-center gap-2 rounded-lg border px-3 py-2 text-[10px] font-semibold tracking-[0.12em] ${demoMode ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"}`}
+          >
+            <span
+              className={`size-1.5 rounded-full ${demoMode ? "bg-amber-400" : "animate-pulse bg-emerald-400"}`}
+            />
             {demoMode ? "SIMULATED DEMONSTRATION DATA" : "WORKFLOW API CONNECTED"}
           </div>
         </div>
@@ -371,10 +378,8 @@ export function MainShell({
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
           <div className="rail-grid mx-auto max-w-[1800px] px-4 py-5 sm:px-6 sm:py-7">
-            <div className={`border-b border-border/70 ${isCommand ? "mb-4 pb-3" : "mb-6 pb-5"}`}>
-              <p
-                className={`mb-2 text-[10px] font-bold tracking-[0.18em] ${isCommand ? "text-rail-yellow" : "text-rail-orange"}`}
-              >
+            <div className="mb-4 border-b border-border/70 pb-3">
+              <p className="mb-2 text-[10px] font-bold tracking-[0.18em] text-rail-yellow">
                 {isCommand ? "CENTRAL RAILWAY · LIVE OPERATIONS" : "OPERATIONS / CONTROL VIEW"}
               </p>
               <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
@@ -390,7 +395,7 @@ export function MainShell({
         <footer className="border-t border-border px-6 py-3 text-xs text-muted-foreground">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="max-w-3xl">
-              TRACKWISE is a prototype decision-support simulation. It does not control signals,
+              CODEONTRACK is a prototype decision-support simulation. It does not control signals,
               interlocking, Kavach, train movement or any safety-critical railway system.
             </p>
             <p className="flex items-center gap-1">

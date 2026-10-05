@@ -9,13 +9,13 @@ import { priorityBand, priorityScore } from "@/lib/trackwise/engine";
 export const Route = createFileRoute("/maintenance")({
   head: () => ({
     meta: [
-      { title: "Maintenance Register — TRACKWISE Simulation" },
+      { title: "Maintenance Register — CODEONTRACK Simulation" },
       {
         name: "description",
         content:
           "Filterable register of 30 simulated Engineering, S&T and TRD maintenance tasks by department, priority and corridor section.",
       },
-      { property: "og:title", content: "Maintenance Register — TRACKWISE" },
+      { property: "og:title", content: "Maintenance Register — CODEONTRACK" },
       {
         property: "og:description",
         content: "Simulated maintenance task register with department, priority and section filters.",

@@ -22,7 +22,7 @@ export function normalizeIncident(row: Record<string, unknown>): StationIncident
     id: asString(row["id"], `INC-${Date.now()}`),
     timestamp: asString(row["timestamp"] ?? row["created_at"], new Date().toISOString()),
     asset: asString(row["asset"] ?? row["asset_id"], "Unknown asset"),
-    location: asString(row["location"], "NDG Station"),
+    location: asString(row["location"], "Manmad Jn"),
     department: ["TMS", "TDMS", "SMMS", "COA"].includes(department)
       ? (department as StationIncident["department"])
       : "TMS",

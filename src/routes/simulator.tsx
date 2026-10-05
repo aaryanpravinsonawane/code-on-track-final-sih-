@@ -12,13 +12,13 @@ import type { OptimizationResult } from "@/lib/trackwise/types";
 export const Route = createFileRoute("/simulator")({
   head: () => ({
     meta: [
-      { title: "What-If Simulator — TRACKWISE" },
+      { title: "What-If Simulator — CODEONTRACK" },
       {
         name: "description",
         content:
           "Simulate train delays of +15, +30 or +60 minutes, detect resulting block conflicts and re-optimize the maintenance plan with before/after comparison.",
       },
-      { property: "og:title", content: "What-If Delay Simulator — TRACKWISE" },
+      { property: "og:title", content: "What-If Delay Simulator — CODEONTRACK" },
       {
         property: "og:description",
         content: "Delay injection, conflict detection and simulated re-optimization of block plans.",

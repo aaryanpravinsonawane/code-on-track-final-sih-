@@ -161,7 +161,7 @@ export function MainShell({
               <TrainFront className="size-5 text-primary-foreground" />
             </div>
             <div>
-              <p className="font-display text-lg font-bold tracking-[0.14em] text-primary">TRACKWISE</p>
+              <p className="font-display text-lg font-bold tracking-[0.14em] text-primary">CODEONTRACK</p>
               <p className="text-[10px] text-muted-foreground tracking-wide">
                 INTEGRATED RAILWAY OPERATIONS
               </p>
@@ -319,7 +319,7 @@ export function MainShell({
         <footer className="border-t border-border px-6 py-3 text-xs text-muted-foreground">
           <div className="flex items-center justify-between">
             <p>
-              TRACKWISE is a prototype decision-support simulation. It does not control signals,
+              CODEONTRACK is a prototype decision-support simulation. It does not control signals,
               interlocking, Kavach, train movement or any safety-critical railway system.
             </p>
             <p className="flex items-center gap-1">

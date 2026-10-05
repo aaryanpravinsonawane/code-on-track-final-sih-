@@ -7,13 +7,13 @@ import { useTrackwise } from "@/lib/trackwise/store";
 export const Route = createFileRoute("/timeline")({
   head: () => ({
     meta: [
-      { title: "Gantt Timeline — TRACKWISE Simulation" },
+      { title: "Gantt Timeline — CODEONTRACK Simulation" },
       {
         name: "description",
         content:
           "Interactive railway timeline showing simulated train movements, declared windows, planned maintenance blocks and detected conflicts by section.",
       },
-      { property: "og:title", content: "Gantt Timeline — TRACKWISE" },
+      { property: "og:title", content: "Gantt Timeline — CODEONTRACK" },
       {
         property: "og:description",
         content: "Section-wise timeline of trains, maintenance blocks and conflicts.",

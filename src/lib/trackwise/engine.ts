@@ -63,7 +63,7 @@ function resourceAvailable(task: MaintenanceTask, input: OptimizationInput): str
 }
 
 export const localEngine: OptimizationEngine = {
-  name: "TRACKWISE Heuristic Bundler v1 (simulated)",
+  name: "CODEONTRACK Heuristic Bundler v1 (simulated)",
   async optimize(input: OptimizationInput): Promise<OptimizationResult> {
     const delays = input.delays ?? {};
     const blocks: PlannedBlock[] = [];

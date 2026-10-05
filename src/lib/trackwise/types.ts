@@ -1,4 +1,4 @@
-// TRACKWISE domain types.
+// CODEONTRACK domain types.
 // NOTE: This is a SIMULATION prototype. Nothing here connects to real
 // railway signalling, interlocking, Kavach or any safety-critical system.
 

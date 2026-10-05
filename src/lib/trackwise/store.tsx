@@ -121,7 +121,7 @@ export function TrackwiseProvider({ children }: { children: ReactNode }) {
     workflowRef.current = next;
     setWorkflow(next);
     if (typeof window !== "undefined") {
-      window.localStorage.setItem("trackwise_workflow_v1", JSON.stringify(next));
+      window.localStorage.setItem("trackwise_workflow_v2", JSON.stringify(next));
     }
   }, []);
 

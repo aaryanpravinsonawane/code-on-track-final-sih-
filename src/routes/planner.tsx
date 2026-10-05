@@ -10,13 +10,13 @@ import { AIOperationsCenter } from "@/components/trackwise/AIOperationsCenter";
 export const Route = createFileRoute("/planner")({
   head: () => ({
     meta: [
-      { title: "AI Block Planner — TRACKWISE Simulation" },
+      { title: "AI Block Planner — CODEONTRACK Simulation" },
       {
         name: "description",
         content:
           "Generate an optimized, conflict-checked maintenance block plan that bundles compatible Engineering, S&T and TRD tasks into shared corridor blocks.",
       },
-      { property: "og:title", content: "AI Block Planner — TRACKWISE" },
+      { property: "og:title", content: "AI Block Planner — CODEONTRACK" },
       {
         property: "og:description",
         content: "Rule-based block optimization with full explainability for every recommendation.",

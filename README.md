@@ -1,8 +1,8 @@
-# Trackwise Planner
+# Code On Track SIH 26
 
-Build a realistic simulation-based web prototype called "TRACKWISE".
+Build a realistic simulation-based web prototype called "CODEONTRACK".
 
-TRACKWISE is an AI-assisted railway maintenance block planning and optimization platform for Indian Railways.
+CODEONTRACK is an AI-assisted railway maintenance block planning and optimization platform for Indian Railways.
 
 IMPORTANT:
 
@@ -294,7 +294,7 @@ Conflicts: 8
 
 Block utilization: 58%
 
-TRACKWISE Simulation:
+CODEONTRACK Simulation:
 
 Coordinated blocks: 6
 

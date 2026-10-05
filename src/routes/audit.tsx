@@ -11,13 +11,13 @@ import { workflowApiConfigured, workflowService } from "@/services/api/workflowS
 export const Route = createFileRoute("/audit")({
   head: () => ({
     meta: [
-      { title: "Audit Log — TRACKWISE Simulation" },
+      { title: "Audit Log — CODEONTRACK Simulation" },
       {
         name: "description",
         content:
-          "Chronological audit trail of plan generation, approvals, rejections, role changes and what-if simulations in the TRACKWISE prototype.",
+          "Chronological audit trail of plan generation, approvals, rejections, role changes and what-if simulations in the CODEONTRACK prototype.",
       },
-      { property: "og:title", content: "Audit Log — TRACKWISE" },
+      { property: "og:title", content: "Audit Log — CODEONTRACK" },
       { property: "og:description", content: "Traceable record of every planning action in the simulation." },
     ],
   }),
@@ -90,7 +90,7 @@ function AuditPage() {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = "trackwise-audit.csv";
+    link.download = "codeontrack-audit.csv";
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -100,7 +100,7 @@ function AuditPage() {
       title="AUDIT LOG"
       subtitle={`Secure audit trail · Active role: ${role} · Current plan status: ${planStatus}`}
     >
-      {demoMode && <p className="mb-4 border-l-2 border-warn bg-warn/10 px-3 py-2 text-xs text-warn-foreground">Audit entries are from the simulated Trackwise workflow unless an API backend is configured.</p>}
+      {demoMode && <p className="mb-4 border-l-2 border-warn bg-warn/10 px-3 py-2 text-xs text-warn-foreground">Audit entries are from the simulated CODEONTRACK workflow unless an API backend is configured.</p>}
       <Panel title={`Recorded actions (${rows.length})`} right={<div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => void verify()} disabled={verifying}><ShieldCheck className="mr-1.5 size-4" />{verifying ? "Verifying..." : "Verify chain"}</Button><Button variant="outline" size="sm" onClick={exportCsv}><Download className="mr-1.5 size-4" />Export CSV</Button></div>}>
         <input aria-label="Search audit events" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search event, user, entity, or action" className="mb-3 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
         {rows.length === 0 ? (

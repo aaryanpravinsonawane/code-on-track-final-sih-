@@ -20,13 +20,13 @@ import type { SectionId } from "@/lib/trackwise/types";
 export const Route = createFileRoute("/network")({
   head: () => ({
     meta: [
-      { title: "Railway Network — TRACKWISE Corridor Model" },
+      { title: "Railway Network — CODEONTRACK Corridor Model" },
       {
         name: "description",
         content:
           "Interactive simulated railway corridor NDG–KRP–STP–DVR–MRG with section traffic, status, maintenance load and planned blocks.",
       },
-      { property: "og:title", content: "TRACKWISE Railway Network View" },
+      { property: "og:title", content: "CODEONTRACK Railway Network View" },
       {
         property: "og:description",
         content: "Simulated corridor data model shared by the dashboard, planner and timeline.",

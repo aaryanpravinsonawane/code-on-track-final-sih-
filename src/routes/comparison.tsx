@@ -9,13 +9,13 @@ import { useTrackwise } from "@/lib/trackwise/store";
 export const Route = createFileRoute("/comparison")({
   head: () => ({
     meta: [
-      { title: "Before vs After — TRACKWISE Simulation Results" },
+      { title: "Before vs After — CODEONTRACK Simulation Results" },
       {
         name: "description",
         content:
-          "Comparison of traditional department-wise block planning against TRACKWISE coordinated block planning using representative simulated data.",
+          "Comparison of traditional department-wise block planning against CODEONTRACK coordinated block planning using representative simulated data.",
       },
-      { property: "og:title", content: "Traditional vs TRACKWISE Coordinated Planning" },
+      { property: "og:title", content: "Traditional vs CODEONTRACK Coordinated Planning" },
       {
         property: "og:description",
         content: "Simulation results using representative data — blocks, window hours, conflicts and utilization.",
@@ -36,10 +36,10 @@ function ComparisonPage() {
   };
 
   const chart = [
-    { metric: "Blocks", Traditional: TRADITIONAL_BASELINE.blocks, TRACKWISE: tw.blocks },
-    { metric: "Window hours", Traditional: TRADITIONAL_BASELINE.windowHours, TRACKWISE: tw.windowHours },
-    { metric: "Conflicts", Traditional: TRADITIONAL_BASELINE.conflicts, TRACKWISE: tw.conflicts },
-    { metric: "Utilization %", Traditional: TRADITIONAL_BASELINE.utilization, TRACKWISE: tw.utilization },
+    { metric: "Blocks", Traditional: TRADITIONAL_BASELINE.blocks, CODEONTRACK: tw.blocks },
+    { metric: "Window hours", Traditional: TRADITIONAL_BASELINE.windowHours, CODEONTRACK: tw.windowHours },
+    { metric: "Conflicts", Traditional: TRADITIONAL_BASELINE.conflicts, CODEONTRACK: tw.conflicts },
+    { metric: "Utilization %", Traditional: TRADITIONAL_BASELINE.utilization, CODEONTRACK: tw.utilization },
   ];
 
   return (
@@ -63,7 +63,7 @@ function ComparisonPage() {
             ]}
           />
         </Panel>
-        <Panel title="TRACKWISE Simulation (coordinated)">
+        <Panel title="CODEONTRACK Simulation (coordinated)">
           <Rows
             good
             rows={[
@@ -86,7 +86,7 @@ function ComparisonPage() {
               <Tooltip />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Bar dataKey="Traditional" fill="var(--color-muted-foreground)" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="TRACKWISE" fill="var(--color-primary)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="CODEONTRACK" fill="var(--color-primary)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartBox>

@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrandSplash } from "@/components/trackwise/BrandMark";
 import {
   Outlet,
   Link,
@@ -81,14 +82,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Railway Management System — Operations Control Center" },
+      { title: "CODEONTRACK — Rail Command Center" },
       {
         name: "description",
         content:
           "Integrated railway operations, maintenance, station, traction, and signal management control center.",
       },
-      { name: "author", content: "Railway Management System" },
-      { property: "og:title", content: "Railway Management System — Operations Control Center" },
+      { name: "author", content: "CODEONTRACK" },
+      { property: "og:title", content: "CODEONTRACK — Rail Command Center" },
       {
         property: "og:description",
         content: "Integrated railway operations and maintenance control center.",
@@ -196,9 +197,8 @@ function AuthGuard({ children }: { children: ReactNode }) {
     }
   }, [authReady, user, router, pathname, requiredModule]);
 
-  if (!authReady || (!user && pathname !== "/login")) {
-    return null;
-  }
+  if (pathname === "/login") return <>{children}</>;
+  if (!authReady || !user) return <BrandSplash />;
 
   return <>{children}</>;
 }

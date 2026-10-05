@@ -104,7 +104,7 @@ function TDMSDashboard() {
                 {
                   id: "OHE-001",
                   type: "OHE Section",
-                  location: "S1 · NDG-KRP",
+                  location: "S1 · Manmad Jn–Lasur",
                   voltage: "25kV",
                   load: "450A",
                   health: "Good",
@@ -113,7 +113,7 @@ function TDMSDashboard() {
                 {
                   id: "OHE-002",
                   type: "OHE Section",
-                  location: "S2 · KRP-STP",
+                  location: "S2 · Lasur–Jalna",
                   voltage: "25kV",
                   load: "380A",
                   health: "Good",

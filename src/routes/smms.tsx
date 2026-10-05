@@ -92,7 +92,7 @@ function SMMSDashboard() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Location</p>
-              <p className="text-sm font-semibold text-foreground">KM 104/7</p>
+              <p className="text-sm font-semibold text-foreground">Partur · KM 221/7</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Severity</p>
@@ -125,7 +125,7 @@ function SMMSDashboard() {
             {
               id: "S-204",
               type: "Colour Light",
-              location: "KM 104/7",
+              location: "Partur · KM 221/7",
               state: "Red",
               health: "Failed",
               lastInspection: "2026-09-10",
@@ -135,7 +135,7 @@ function SMMSDashboard() {
             {
               id: "S-205",
               type: "Colour Light",
-              location: "KM 105/2",
+              location: "Partur · KM 222/2",
               state: "Green",
               health: "Good",
               lastInspection: "2026-09-15",
@@ -145,7 +145,7 @@ function SMMSDashboard() {
             {
               id: "S-206",
               type: "Distant",
-              location: "KM 106/1",
+              location: "Partur · KM 223/1",
               state: "Yellow",
               health: "Warning",
               lastInspection: "2026-09-12",
@@ -155,7 +155,7 @@ function SMMSDashboard() {
             {
               id: "S-207",
               type: "Shunting",
-              location: "KM 107/3",
+              location: "Partur · KM 224/3",
               state: "Green",
               health: "Good",
               lastInspection: "2026-09-16",
@@ -165,7 +165,7 @@ function SMMSDashboard() {
             {
               id: "S-208",
               type: "Colour Light",
-              location: "KM 108/5",
+              location: "Partur · KM 225/5",
               state: "Green",
               health: "Good",
               lastInspection: "2026-09-14",
@@ -175,7 +175,7 @@ function SMMSDashboard() {
             {
               id: "S-209",
               type: "Point Indicator",
-              location: "KM 109/2",
+              location: "Partur · KM 226/2",
               state: "Yellow",
               health: "Warning",
               lastInspection: "2026-09-11",

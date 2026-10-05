@@ -11,7 +11,7 @@ function StationMap() {
   return (
     <MainShell
       title="STATION MAP"
-      subtitle="NDG Junction schematic · simulated live asset telemetry"
+      subtitle="NDG · Nandgaon Junction · 2D yard map · simulated live asset telemetry"
     >
       <MapAnalyticsSummary />
       <div className="mt-4" />

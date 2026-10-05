@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Activity, CheckCircle2, Clock, TrainFront, Zap } from "lucide-react";
 import { MainShell } from "@/components/trackwise/MainShell";
 import { Panel } from "@/components/trackwise/shared";
@@ -7,6 +7,12 @@ import { KpiCard } from "@/components/trackwise/KpiCard";
 import { departmentHealth, platforms, tracks } from "@/lib/trackwise/operations";
 import { LiveOperationsFeed } from "@/components/realtime/LiveOperationsFeed";
 import { useLiveSimulation } from "@/lib/liveSimulation";
+import {
+  STATE_META,
+  buildSnapshot,
+  describePosition,
+  etaToNextMajor,
+} from "@/lib/trackwise/corridor";
 
 export const Route = createFileRoute("/live-operations")({
   component: LiveOperations,
@@ -15,6 +21,8 @@ export const Route = createFileRoute("/live-operations")({
 function LiveOperations() {
   const [heartbeat, setHeartbeat] = useState(0);
   const live = useLiveSimulation();
+  // Same Manmad → Hazur Sahib Nanded fleet as the Command Center corridor (simulated).
+  const corridor = useMemo(() => buildSnapshot(heartbeat * 2, live), [heartbeat, live]);
   useEffect(() => {
     const timer = window.setInterval(() => setHeartbeat((value) => value + 1), 3000);
     return () => window.clearInterval(timer);
@@ -23,16 +31,16 @@ function LiveOperations() {
   return (
     <MainShell
       title="LIVE OPERATIONS"
-      subtitle={`NDG Integrated Control Room · simulation heartbeat ${heartbeat + 1}`}
+      subtitle={`Manmad → Hazur Sahib Nanded corridor · simulated live movements · heartbeat ${heartbeat + 1}`}
     >
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard
           label="Running Trains"
-          value={live.kpi.running_trains}
+          value={corridor.metrics.trains}
           icon={TrainFront}
           tone="success"
         />
-        <KpiCard label="Delayed Trains" value={live.kpi.delayed_trains} icon={Clock} tone="warn" />
+        <KpiCard label="Delayed Trains" value={corridor.metrics.delays} icon={Clock} tone="warn" />
         <KpiCard
           label="Track Occupancy"
           value={live.tracks.filter((track) => track.occupancy !== "Free").length}
@@ -48,29 +56,42 @@ function LiveOperations() {
                 <tr className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground">
                   <th className="px-3 py-3">Train</th>
                   <th className="px-3 py-3">Movement</th>
-                  <th className="px-3 py-3">Platform</th>
+                  <th className="px-3 py-3">Next major stop</th>
                   <th className="px-3 py-3">Delay</th>
                   <th className="px-3 py-3">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {live.trains.slice(0, 6).map((train, index) => (
-                  <tr key={train.number} className="border-b border-border/70 hover:bg-accent/50">
-                    <td className="px-3 py-3 font-mono font-semibold">{train.number}</td>
-                    <td className="px-3 py-3">
-                      {train.status} · KM {train.position_km}
-                    </td>
-                    <td className="px-3 py-3">P-{index + 1}</td>
-                    <td
-                      className={`px-3 py-3 ${train.delay_minutes ? "text-amber-500" : "text-emerald-500"}`}
-                    >
-                      {train.delay_minutes
-                        ? `+${train.delay_minutes} min · pred ${train.delay_prediction_minutes}`
-                        : "On time"}
-                    </td>
-                    <td className="px-3 py-3 text-emerald-500">Running</td>
-                  </tr>
-                ))}
+                {corridor.trains.map((train) => {
+                  const eta = etaToNextMajor(train);
+                  const meta = STATE_META[train.state];
+                  return (
+                    <tr key={train.id} className="border-b border-border/70 hover:bg-accent/50">
+                      <td className="px-3 py-3 font-mono font-semibold">
+                        {train.id}
+                        <span className="block font-sans text-[11px] font-normal text-muted-foreground">
+                          {train.name}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        {describePosition(train.km)} · km {Math.round(train.km)}
+                      </td>
+                      <td className="px-3 py-3">
+                        {eta ? `${eta.station.name} · ~${eta.minutes} min` : "—"}
+                      </td>
+                      <td
+                        className={`px-3 py-3 ${train.delay > 10 ? "text-amber-500" : "text-emerald-500"}`}
+                      >
+                        {train.delay > 10
+                          ? `+${train.delay} min · pred ${train.predictedDelay}`
+                          : "On time"}
+                      </td>
+                      <td className="px-3 py-3 font-semibold" style={{ color: meta.color }}>
+                        {meta.label}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

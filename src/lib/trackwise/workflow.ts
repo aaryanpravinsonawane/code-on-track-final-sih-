@@ -158,14 +158,14 @@ export const DEMO_WORKFLOW: WorkflowSnapshot = {
     { id: "BLK-ENG-017", title: "Ballast screening", department: "Engineering", section: "S3", track: "UP-MAIN", window_start: 1320, window_end: 1440, duration_minutes: 90, resources: ["Tamping Machine", "Track Gang A"], urgency: 8, priority: 4, tsr_required: true, bundle_key: "S3-UP-MAIN-NIGHT", requested_by: "TMS-001", status: "In Progress", replan_required: false },
   ],
   issues: [
-    { id: "ISS-DEMO-101", source: "TMS", severity: "CRITICAL", location: "S1 · KM 104/7", description: "Rail weld inspection is overdue; temporary speed restriction required for the simulated corridor.", created_at: "2026-09-30T07:10:00Z", status: "Open", assigned_department: "Engineering", recommended_action: "Review the S1 request and confirm the TSR plan." },
-    { id: "ISS-DEMO-102", source: "SMMS", severity: "HIGH", location: "S2 · Karimpur", description: "Intermittent track circuit indication requires a signal crew inspection.", created_at: "2026-09-30T07:24:00Z", status: "Assigned", assigned_department: "S&T", recommended_action: "Confirm isolation and schedule a relay replacement." },
-    { id: "ISS-DEMO-103", source: "TDMS", severity: "MEDIUM", location: "S1 · OHE span 44/8", description: "Tower wagon availability is reduced for the next maintenance window.", created_at: "2026-09-30T07:40:00Z", status: "Open", assigned_department: "TRD", recommended_action: "Re-run the resource-feasible block schedule." },
-    { id: "ISS-DEMO-104", source: "Station Master", severity: "HIGH", location: "NDG Station · Platform 2", description: "Simulated platform occupancy overlaps the proposed station work window.", created_at: "2026-09-30T07:56:00Z", status: "In Progress", assigned_department: "Operations", recommended_action: "Coordinate the window with the section controller." },
+    { id: "ISS-DEMO-101", source: "TMS", severity: "CRITICAL", location: "Nagarsol · KM 24/7", description: "Rail weld inspection is overdue; temporary speed restriction required for the simulated corridor.", created_at: "2026-09-30T07:10:00Z", status: "Open", assigned_department: "Engineering", recommended_action: "Review the S1 request and confirm the TSR plan." },
+    { id: "ISS-DEMO-102", source: "SMMS", severity: "HIGH", location: "Lasur · Track circuit TC-12", description: "Intermittent track circuit indication requires a signal crew inspection.", created_at: "2026-09-30T07:24:00Z", status: "Assigned", assigned_department: "S&T", recommended_action: "Confirm isolation and schedule a relay replacement." },
+    { id: "ISS-DEMO-103", source: "TDMS", severity: "MEDIUM", location: "Selu · OHE span 249/8", description: "Tower wagon availability is reduced for the next maintenance window.", created_at: "2026-09-30T07:40:00Z", status: "Open", assigned_department: "TRD", recommended_action: "Re-run the resource-feasible block schedule." },
+    { id: "ISS-DEMO-104", source: "Station Master", severity: "HIGH", location: "Parbhani Jn · Platform 2", description: "Simulated platform occupancy overlaps the proposed station work window.", created_at: "2026-09-30T07:56:00Z", status: "In Progress", assigned_department: "Operations", recommended_action: "Coordinate the window with the section controller." },
     { id: "ISS-DEMO-105", source: "COA", severity: "LOW", location: "Central Control", description: "A draft request is awaiting controller review before approval.", created_at: "2026-09-30T08:03:00Z", status: "Open", assigned_department: "Operations", recommended_action: "Complete review and record the decision." },
   ],
   field_reports: [
-    { id: "FLD-DEMO-001", event_type: "Machine Unavailable", asset: "TAMP-04", work_package_id: "WP-ENG-17", severity: "HIGH", event_time: "2026-09-30T06:45:00Z", remarks: "Tamping machine unavailable during pre-block inspection.", location: "S3 · KM 128/4", block_id: "BLK-ENG-017", reported_by: "MNT-001", received_at: "2026-09-30T06:47:00Z" },
+    { id: "FLD-DEMO-001", event_type: "Machine Unavailable", asset: "TAMP-04", work_package_id: "WP-ENG-17", severity: "HIGH", event_time: "2026-09-30T06:45:00Z", remarks: "Tamping machine unavailable during pre-block inspection.", location: "Partur · KM 221/4", block_id: "BLK-ENG-017", reported_by: "MNT-001", received_at: "2026-09-30T06:47:00Z" },
   ],
   audit: [],
   last_optimization: null,
@@ -330,10 +330,10 @@ export function runDemoBlockOptimizer(
 export function loadWorkflowSnapshot(): WorkflowSnapshot {
   if (typeof window === "undefined") return DEMO_WORKFLOW;
   try {
-    const saved = window.localStorage.getItem("trackwise_workflow_v1");
+    const saved = window.localStorage.getItem("trackwise_workflow_v2");
     return saved ? { ...DEMO_WORKFLOW, ...JSON.parse(saved) } as WorkflowSnapshot : DEMO_WORKFLOW;
   } catch {
-    window.localStorage.removeItem("trackwise_workflow_v1");
+    window.localStorage.removeItem("trackwise_workflow_v2");
     return DEMO_WORKFLOW;
   }
 }
